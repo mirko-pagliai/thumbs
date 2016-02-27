@@ -1,0 +1,180 @@
+<?php
+/**
+ * This file is part of Thumbs.
+ *
+ * Thumbs is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Thumbs is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Thumbs.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author		Mirko Pagliai <mirko.pagliai@gmail.com>
+ * @copyright	Copyright (c) 2016, Mirko Pagliai for Nova Atlantis Ltd
+ * @license		http://www.gnu.org/licenses/agpl.txt AGPL License
+ * @link		http://git.novatlantis.it Nova Atlantis Ltd
+ */
+
+namespace Thumbs\Utility;
+
+use Cake\Network\Exception\InternalErrorException;
+use Cake\Network\Exception\NotFoundException;
+
+/**
+ * Utility to create a thumb.
+ * 
+ * Please, refer to the `README` file to know how to use the utility and to see examples.
+ */
+class ThumbCreator {
+	/**
+	 * Origin file extension
+	 * @var string
+	 */
+	protected $extension;
+	
+	/**
+	 * Imagick object
+	 * @var object 
+	 */
+	protected $imagick;
+	
+	/**
+	 * Origin file path
+	 * @var string
+	 * @see __construct() 
+	 */
+	protected $origin;
+	
+	/**
+	 * Target file path
+	 * @var string
+	 * @see target() 
+	 */
+	protected $target;
+
+	/**
+	 * Construct. Sets the origin file
+	 * @param string $origin Origin file path
+	 * @return string Origin file path
+	 * @throws InternalErrorException
+	 * @uses _downloadTemporary()
+	 * @uses $extension
+	 * @uses $imagick
+	 * @uses $origin
+	 */
+	public function __construct($origin) {
+		//Checks for Imagick extension
+        if(!extension_loaded('imagick'))
+            throw new InternalErrorException(__d('thumb', '{0} is not available', 'Imagick'));
+		
+		//Sets the origin file extension
+		$this->extension = strtolower(pathinfo($origin, PATHINFO_EXTENSION));
+		
+		//If the origin file is a remote file, downloads as temporary file
+		if(is_url($origin))
+			$origin = $this->_downloadTemporary($origin);
+		
+		//Checks if the origin file is readable
+		if(!is_readable($origin))
+			throw new InternalErrorException(__d('thumb', 'File or directory {0} not readable', $origin));
+				
+		//Checks if the origin is an image
+		if(!in_array($this->extension, ['gif', 'jpg', 'jpeg', 'png']))
+            throw new InternalErrorException(__d('thumb', 'The file {0} is not an image', $origin));
+		
+		//Creates the Imagick object adn strips all profiles and comments
+		$this->imagick = new \Imagick($origin);
+		$this->imagick->stripImage();
+		
+		//For jpeg images, sets the image compression
+		if($this->extension === 'jpg') {
+			$this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
+			$this->imagick->setImageCompressionQuality(100);
+		}
+		
+		return $this->origin = $origin;
+	}
+	
+	/**
+	 * Destruct
+	 * @uses $imagick
+	 * @uses $origin
+	 */
+	public function __destruct() {
+		//Removes the temporary file, if exists
+		if(dirname($this->origin) === sys_get_temp_dir())
+			unlink($this->origin);
+		
+		//Clears all resources associated to Imagick object
+		if(!empty($this->imagick))
+			$this->imagick->clear();
+	}
+	
+	/**
+	 * Downloads a file as a temporary file. This is useful if the source file is a remote file
+	 * @param string $url File url
+	 * @return string Temporary file path
+	 * @throws NotFoundException
+	 * @uses $extension
+	 */
+	protected function _downloadTemporary($url) {
+		//Checks if the file is readable
+		if(!$fopen = @fopen($url, 'r'))
+			throw new NotFoundException(__d('thumb', 'File or directory {0} not readable', $url));
+		
+		//Downloads as temporary file
+		$tmp = sprintf('%s.%s', tempnam(sys_get_temp_dir(), md5($url)), $this->extension);
+		
+		file_put_contents($tmp, $fopen);
+		
+		return $tmp;
+	}
+	
+	/**
+	 * Resizes an image
+	 * @param int $width Final width
+	 * @param int $height Finali height
+	 * @throws InternalErrorException
+	 * @uses $imagick
+	 * @uses $target
+	 */
+	public function resize($width = 0, $height = 0) {
+		//Checks for target
+		if(empty($this->target))
+			throw new InternalErrorException(__d('thumb', 'There is not the final target'));
+		
+		//Checks for final size
+		if(empty($width) && empty($height))
+			throw new InternalErrorException(__d('thumb', 'There are not the final size'));
+		
+		//Writes the thumbnail
+		$this->imagick->thumbnailImage($width, $height, $width && $height);
+		$this->imagick->writeImage($this->target);
+	}
+	
+	/**
+	 * Sets the file target
+	 * @param string $target File target path
+	 * @return string File target path
+	 * @throws InternalErrorException
+	 * @uses $target
+	 */
+	public function target($target) {
+		//Checks if the target file already exists
+		if(file_exists($target))
+			throw new InternalErrorException(__d('thumb', 'File or directory {0} already exists', $target));
+		
+		//Checks if the target directory is writable
+		if(!is_writable(dirname($target)))
+			throw new InternalErrorException(__d('thumb', 'File or directory {0} not writeable', dirname($target)));
+		
+		return $this->target = $target;
+	}
+}
+

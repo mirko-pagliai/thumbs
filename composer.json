@@ -1,0 +1,21 @@
+{
+    "name": "mirko-pagliai/thumbs",
+    "description": "Thumbs plugin for CakePHP",
+    "homepage": "https://github.com/mirko-pagliai/thumbs",
+    "type": "cakephp-plugin",
+    "license": "AGPL",
+	"authors": [{
+		"name": "Mirko Pagliai",
+		"email": "mirko.pagliai@gmail.com"
+    }],
+    "require": {
+        "php": ">=5.5.9",
+        "cakephp/cakephp": "~3.2",
+		"ext-imagick": ">=3.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Thumbs\\": "src"
+        }
+    }
+}
