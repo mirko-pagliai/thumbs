@@ -20,7 +20,6 @@
  * @license		http://www.gnu.org/licenses/agpl.txt AGPL License
  * @link		http://git.novatlantis.it Nova Atlantis Ltd
  */
-
 namespace Thumbs\Utility;
 
 use Cake\Network\Exception\InternalErrorException;
@@ -61,7 +60,7 @@ class ThumbCreator {
 	/**
 	 * Construct. Sets the origin file
 	 * @param string $origin Origin file path
-	 * @return string Origin file path
+	 * @return \Thumbs\Utility\ThumbCreator
 	 * @throws InternalErrorException
 	 * @uses _downloadTemporary()
 	 * @uses $extension
@@ -98,7 +97,9 @@ class ThumbCreator {
 			$this->imagick->setImageCompressionQuality(100);
 		}
 		
-		return $this->origin = $origin;
+		$this->origin = $origin;
+		
+		return $this;
 	}
 	
 	/**
@@ -140,6 +141,7 @@ class ThumbCreator {
 	 * Resizes an image
 	 * @param int $width Final width
 	 * @param int $height Finali height
+	 * @return \Thumbs\Utility\ThumbCreator
 	 * @throws InternalErrorException
 	 * @uses $imagick
 	 * @uses $target
@@ -156,12 +158,14 @@ class ThumbCreator {
 		//Writes the thumbnail
 		$this->imagick->thumbnailImage($width, $height, $width && $height);
 		$this->imagick->writeImage($this->target);
+		
+		return $this;
 	}
 	
 	/**
 	 * Sets the file target
 	 * @param string $target File target path
-	 * @return string File target path
+	 * @return \Thumbs\Utility\ThumbCreator
 	 * @throws InternalErrorException
 	 * @uses $target
 	 */
@@ -174,7 +178,9 @@ class ThumbCreator {
 		if(!is_writable(dirname($target)))
 			throw new InternalErrorException(__d('thumb', 'File or directory {0} not writeable', dirname($target)));
 		
-		return $this->target = $target;
+		$this->target = $target;
+		
+		return $this;
 	}
 }
 
