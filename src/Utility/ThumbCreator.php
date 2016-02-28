@@ -143,6 +143,9 @@ class ThumbCreator {
 		//If the origin file is a remote file, downloads as temporary file
 		if(is_url($origin))
 			$origin = $this->_downloadTemporary($origin);
+		//Else, if it's a relative path, the file will be relative to `APP/webroot/img`
+		elseif(!\Cake\Filesystem\Folder::isAbsolute($origin))
+			$origin = WWW_ROOT.'img'.DS.$origin;
 		
 		//Checks if the origin file is readable
 		if(!is_readable($origin))
@@ -184,11 +187,11 @@ class ThumbCreator {
 	public function resize($width = 0, $height = 0) {
 		//Checks for target
 		if(empty($this->target))
-			throw new InternalErrorException(__d('thumb', 'There is not the final target'));
+			throw new InternalErrorException(__d('thumb', 'The target file has not been set'));
 		
 		//Checks for final size
 		if(empty($width) && empty($height))
-			throw new InternalErrorException(__d('thumb', 'There are not the final size'));
+			throw new InternalErrorException(__d('thumb', 'The final size are missing'));
 		
 		//Checks for size
 		if(($width && $width >= $this->width) || ($height && $height >= $this->height))
@@ -202,8 +205,8 @@ class ThumbCreator {
 	}
 	
 	/**
-	 * Sets the file target
-	 * @param string $target File target path
+	 * Sets the target file
+	 * @param string $target Target file path
 	 * @return \Thumbs\Utility\ThumbCreator
 	 * @throws InternalErrorException
 	 * @uses $target
