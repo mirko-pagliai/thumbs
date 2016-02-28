@@ -25,6 +25,19 @@
 if(!defined('THUMBS'))
 	define('THUMBS', TMP.'thumbs');
 
+if(!function_exists('extension')) {
+	/**
+	 * Returns the file extension.
+	 * 
+	 * If it's an url, strips the query string.
+	 * @param string $file File
+	 * @return string Extension
+	 */
+	function extension($file) {
+		return strtolower(pathinfo(explode('?', $file, 2)[0], PATHINFO_EXTENSION));
+	}
+}
+
 if(!function_exists('is_url')) {
 	/**
 	 * Checks whether a url is invalid
