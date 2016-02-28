@@ -52,7 +52,7 @@ class ThumbCreator {
 	/**
 	 * Origin file path
 	 * @var string
-	 * @see __construct() 
+	 * @see origin() 
 	 */
 	protected $origin;
 	
@@ -70,51 +70,21 @@ class ThumbCreator {
 	protected $width;
 
 	/**
-	 * Construct. Sets the origin file
+	 * Construct. 
+	 * 
+	 * Sets the origin file, if passed. Otherwise, you have to call the `origin()` method
 	 * @param string $origin Origin file path
 	 * @return \Thumbs\Utility\ThumbCreator
 	 * @throws InternalErrorException
-	 * @uses _downloadTemporary()
-	 * @uses $extension
-	 * @uses $imagick
-	 * @uses $height
-	 * @uses $origin
-	 * @uses $width
+	 * @uses origin()
 	 */
-	public function __construct($origin) {
+	public function __construct($origin = NULL) {
 		//Checks for Imagick extension
         if(!extension_loaded('imagick'))
             throw new InternalErrorException(__d('thumb', '{0} is not available', 'Imagick'));
 		
-		//Sets the origin file extension
-		$this->extension = strtolower(pathinfo($origin, PATHINFO_EXTENSION));
-		
-		//If the origin file is a remote file, downloads as temporary file
-		if(is_url($origin))
-			$origin = $this->_downloadTemporary($origin);
-		
-		//Checks if the origin file is readable
-		if(!is_readable($origin))
-			throw new InternalErrorException(__d('thumb', 'File or directory {0} not readable', $origin));
-				
-		//Checks if the origin is an image
-		if(!in_array($this->extension, ['gif', 'jpg', 'jpeg', 'png']))
-            throw new InternalErrorException(__d('thumb', 'The file {0} is not an image', $origin));
-		
-		//Creates the Imagick object adn strips all profiles and comments
-		$this->imagick = new \Imagick($origin);
-		$this->imagick->stripImage();
-		
-		//For jpeg images, sets the image compression
-		if($this->extension === 'jpg') {
-			$this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
-			$this->imagick->setImageCompressionQuality(100);
-		}
-		
-		//Sets the origin file and the origin size
-		$this->origin = $origin;
-		$this->height = $this->imagick->getimageheight();
-		$this->width = $this->imagick->getImageWidth();
+		if(!empty($origin))
+			$this->origin($origin);
 		
 		return $this;
 	}
@@ -152,6 +122,52 @@ class ThumbCreator {
 		file_put_contents($tmp, $fopen);
 		
 		return $tmp;
+	}
+	
+	/**
+	 * Sets the origin file
+	 * @param string $origin Origin file path
+	 * @return \Thumbs\Utility\ThumbCreator
+	 * @throws InternalErrorException
+	 * @uses _downloadTemporary()
+	 * @uses $extension
+	 * @uses $height
+	 * @uses $imagick
+	 * @uses $origin
+	 * @uses $width
+	 */
+	public function origin($origin) {
+		//Sets the origin file extension
+		$this->extension = strtolower(pathinfo($origin, PATHINFO_EXTENSION));
+		
+		//If the origin file is a remote file, downloads as temporary file
+		if(is_url($origin))
+			$origin = $this->_downloadTemporary($origin);
+		
+		//Checks if the origin file is readable
+		if(!is_readable($origin))
+			throw new InternalErrorException(__d('thumb', 'File or directory {0} not readable', $origin));
+				
+		//Checks if the origin is an image
+		if(!in_array($this->extension, ['gif', 'jpg', 'jpeg', 'png']))
+            throw new InternalErrorException(__d('thumb', 'The file {0} is not an image', $origin));
+		
+		//Creates the Imagick object adn strips all profiles and comments
+		$this->imagick = new \Imagick($origin);
+		$this->imagick->stripImage();
+		
+		//For jpeg images, sets the image compression
+		if($this->extension === 'jpg') {
+			$this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
+			$this->imagick->setImageCompressionQuality(100);
+		}
+		
+		//Sets the origin file and the origin size
+		$this->origin = $origin;
+		$this->height = $this->imagick->getimageheight();
+		$this->width = $this->imagick->getImageWidth();
+		
+		return $this;
 	}
 	
 	/**
