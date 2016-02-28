@@ -25,6 +25,7 @@ use Cake\Routing\Router;
 
 Router::plugin('Thumbs', ['path' => '/'], function ($routes) {
 	$routes->connect('/resize/*', ['controller' => 'Thumbs', 'action' => 'resize', 'plugin' => 'Thumbs'], ['_name' => 'resize']);
+	$routes->connect('/square/*', ['controller' => 'Thumbs', 'action' => 'square', 'plugin' => 'Thumbs'], ['_name' => 'square']);
 	
     $routes->fallbacks('DashedRoute');
 });

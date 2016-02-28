@@ -132,9 +132,6 @@ class ThumbCreator {
 		//If the origin file is a remote file, downloads as temporary file
 		if(is_url($origin))
 			$origin = $this->_downloadTemporary($origin);
-		//Else, if it's a relative path, the file will be relative to `APP/webroot/img`
-		elseif(!\Cake\Filesystem\Folder::isAbsolute($origin))
-			$origin = WWW_ROOT.'img'.DS.$origin;
 		
 		//Checks if the origin file is readable
 		if(!is_readable($origin))

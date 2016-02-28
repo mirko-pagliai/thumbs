@@ -31,12 +31,32 @@ use Thumbs\Utility\ThumbCreator;
  */
 class ThumbsController extends AppController {
 	/**
+	 * Parses origin file
+	 * @param string $origin Origin file, encoded with `base64_encode()`
+	 * @return string Origin file
+	 */
+	protected function _parseOrigin($origin) {
+		$origin = base64_decode($origin);
+		
+		//If it's a relative path, the file will be relative to `APP/webroot/img`
+		if(!\Cake\Filesystem\Folder::isAbsolute($origin))
+			$origin = WWW_ROOT.'img'.DS.$origin;
+		
+		return $origin;
+	}
+
+	/**
 	 * Internal function to render a thumbnail
-	 * @param string $target Target file to render
+	 * @param string $target Target file
 	 */
 	protected function _render($target) {
 		$this->autoRender = FALSE;
-
+		
+		if(is_url($target)) {
+			return $this->redirect($target);
+			exit;
+		}
+		
 		//Renders the thumbnail
 		header(sprintf('Content-type: %s', mime_content_type($target)));
 		readfile($target);
@@ -52,6 +72,7 @@ class ThumbsController extends AppController {
 	 * @throws NotFoundException
 	 * @uses Thumbs\Utility\ThumbCreator::resize()
 	 * @uses Thumbs\Utility\ThumbCreator::target()
+	 * @uses _parseOrigin()
 	 * @uses _render()
 	 */
 	public function resize($origin) {
@@ -62,8 +83,13 @@ class ThumbsController extends AppController {
 		if(empty($height) && empty($width))
 			throw new NotFoundException(__d('thumb', 'The final size are missing'));
 		
-		//Sets origin and target
-		$origin = base64_decode($origin);
+		$origin = $this->_parseOrigin($origin);
+		
+		//If required size exceed original size, renders the origin file
+		if(($width && $width >= getimagesize($origin)[0]) || ($height && $height >= getimagesize($origin)[1]))
+			$this->_render($origin);
+		
+		//Sets target
 		$target = THUMBS.DS.sprintf('resize_%s_w%s_h%s.%s', md5($origin), $width, $height, extension($origin));
 		
 		//Creates the thumbnail, if doesn't exist

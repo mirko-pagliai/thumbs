@@ -38,20 +38,64 @@ class ThumbHelper extends Helper {
 	/**
 	 * Resizes an images, creating a thumbnail.
 	 * 
-	 * You have to set the maximum width and/or the maximum height as options (`width` and `height` options).
+	 * You have to set `height` and/or `width` option.
 	 * @param string $path Path to the image file
 	 * @param array $options Array of HTML attributes
 	 * @return string HTML code
 	 */
 	public function resize($path , array $options = []) {
-		$height = empty($options['height']) ? NULL : $options['height'];
-		$width = empty($options['width']) ? NULL : $options['width'];
+		$height = empty($options['height']) ? 0 : $options['height'];
+		$width = empty($options['width']) ? 0 : $options['width'];
+		unset($options['height'], $options['width']);
 		
 		if($height || $width)
 			$path = Router::url(['_name' => 'resize', base64_encode($path), '?' => compact('height', 'width')], TRUE);
-		
-		unset($options['height'], $options['width']);
 						
 		return $this->Html->image($path, $options);
 	}
+	
+	/**
+	 * Resizes an images, creating a square thumbnail.
+	 * 
+	 * You have to set the `side` option.
+	 * @param string $path Path to the image file
+	 * @param array $options Array of HTML attributes
+	 * @return string HTML code
+	 */
+	public function square($path, array $options = []) {
+		$side = empty($options['side']) ? NULL : $options['side'];
+		unset($options['side']);
+		
+		if($side)
+			$path = Router::url(['_name' => 'square', base64_encode($path), '?' => compact('side')], TRUE);
+						
+		return $this->Html->image($path, $options);
+	}
+	
+	/**
+	 * Resizes an images, creating a thumbnail.
+	 * 
+	 * You have to:
+	 *	* set the `side` option, if you want to create a square thumbnail;
+	 *	* set the `height` and/or `width` option, if you want to create a simple thumbnail.
+	 * @param string $path Path to the image file
+	 * @param array $options Array of HTML attributes
+	 * @return string HTML code
+	 */
+//	public function resize($path , array $options = []) {
+//		//Checks for "side" option
+//		if(!empty($options['side']))
+//			$size['side'] = $options['side'];
+//		//Else, checks for "height" and/or "width options
+//		else {
+//			if(!empty($options['height']))
+//				$size['height'] = $options['height'];
+//			if(!empty($options['width']))
+//				$size['width'] = $options['width'];
+//		}
+//		
+//		unset($options['height'], $options['side'], $options['width']);
+//						
+//		return $this->Html->image(empty($size) ? $path : Router::url(['_name' => 'resize', base64_encode($path), '?' => $size], TRUE), $options);
+//	}
 }
