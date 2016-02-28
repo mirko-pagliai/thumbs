@@ -50,8 +50,17 @@ class ThumbsController extends AppController {
 		$width = $this->request->query('width');
 		$file = base64_decode($file);
 		
-		//If there are not the final size, so the original file is the thumbnail
+		//If there are not the final size, the original file is the thumbnail
 		if(empty($height) && empty($width)) {
+			$this->thumb = $file;
+			return;
+		}
+		
+		//If the file is local and its path is relative, then the path will be relative to `webroot/img`
+		$file = Folder::isAbsolute($file) ? $file : WWW_ROOT.'img'.DS.$file;
+		
+		//If the required size exceed the original size
+		if(($width && $width >= getimagesize($file)[0]) || ($height && $height >= getimagesize($file)[1])) {
 			$this->thumb = $file;
 			return;
 		}
@@ -68,9 +77,6 @@ class ThumbsController extends AppController {
 		//Returns, if the thumbnail already exists
 		if(file_exists($this->thumb))
 			return;
-		
-		//if the file is local and its path is relative, then the path will be relative to `webroot/img`
-		$file = Folder::isAbsolute($file) ? $file : WWW_ROOT.'img'.DS.$file;
 
 		//Creates the thumbnail
 		(new ThumbCreator($file))->target($this->thumb)->resize($width, $height);

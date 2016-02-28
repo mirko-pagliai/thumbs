@@ -44,6 +44,12 @@ class ThumbCreator {
 	protected $imagick;
 	
 	/**
+	 * Height of the origin file
+	 * @var int
+	 */
+	protected $height;
+
+	/**
 	 * Origin file path
 	 * @var string
 	 * @see __construct() 
@@ -56,6 +62,12 @@ class ThumbCreator {
 	 * @see target() 
 	 */
 	protected $target;
+	
+	/**
+	 * Width of the origin file
+	 * @var int
+	 */
+	protected $width;
 
 	/**
 	 * Construct. Sets the origin file
@@ -65,7 +77,9 @@ class ThumbCreator {
 	 * @uses _downloadTemporary()
 	 * @uses $extension
 	 * @uses $imagick
+	 * @uses $height
 	 * @uses $origin
+	 * @uses $width
 	 */
 	public function __construct($origin) {
 		//Checks for Imagick extension
@@ -97,7 +111,10 @@ class ThumbCreator {
 			$this->imagick->setImageCompressionQuality(100);
 		}
 		
+		//Sets the origin file and the origin size
 		$this->origin = $origin;
+		$this->height = $this->imagick->getimageheight();
+		$this->width = $this->imagick->getImageWidth();
 		
 		return $this;
 	}
@@ -144,7 +161,9 @@ class ThumbCreator {
 	 * @return \Thumbs\Utility\ThumbCreator
 	 * @throws InternalErrorException
 	 * @uses $imagick
+	 * @uses $height
 	 * @uses $target
+	 * @uses $width
 	 */
 	public function resize($width = 0, $height = 0) {
 		//Checks for target
@@ -155,6 +174,10 @@ class ThumbCreator {
 		if(empty($width) && empty($height))
 			throw new InternalErrorException(__d('thumb', 'There are not the final size'));
 		
+		//Checks for size
+		if(($width && $width >= $this->width) || ($height && $height >= $this->height))
+			throw new InternalErrorException(__d('thumb', 'The required size exceed the original size'));			
+				
 		//Writes the thumbnail
 		$this->imagick->thumbnailImage($width, $height, $width && $height);
 		$this->imagick->writeImage($this->target);
