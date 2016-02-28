@@ -32,12 +32,6 @@ use Cake\Network\Exception\NotFoundException;
  */
 class ThumbCreator {
 	/**
-	 * Origin file extension
-	 * @var string
-	 */
-	protected $extension;
-	
-	/**
 	 * Imagick object
 	 * @var object 
 	 */
@@ -109,7 +103,6 @@ class ThumbCreator {
 	 * @param string $url File url
 	 * @return string Temporary file path
 	 * @throws NotFoundException
-	 * @uses $extension
 	 */
 	protected function _downloadTemporary($url) {
 		//Checks if the file is readable
@@ -117,7 +110,7 @@ class ThumbCreator {
 			throw new NotFoundException(__d('thumb', 'File or directory {0} not readable', $url));
 		
 		//Downloads as temporary file
-		$tmp = sprintf('%s.%s', tempnam(sys_get_temp_dir(), md5($url)), $this->extension);
+		$tmp = sprintf('%s.%s', tempnam(sys_get_temp_dir(), md5($url)), extension($url));
 		
 		file_put_contents($tmp, $fopen);
 		
@@ -130,16 +123,12 @@ class ThumbCreator {
 	 * @return \Thumbs\Utility\ThumbCreator
 	 * @throws InternalErrorException
 	 * @uses _downloadTemporary()
-	 * @uses $extension
 	 * @uses $height
 	 * @uses $imagick
 	 * @uses $origin
 	 * @uses $width
 	 */
 	public function origin($origin) {
-		//Sets the origin file extension
-		$this->extension = strtolower(pathinfo($origin, PATHINFO_EXTENSION));
-		
 		//If the origin file is a remote file, downloads as temporary file
 		if(is_url($origin))
 			$origin = $this->_downloadTemporary($origin);
@@ -152,7 +141,7 @@ class ThumbCreator {
 			throw new InternalErrorException(__d('thumb', 'File or directory {0} not readable', $origin));
 				
 		//Checks if the origin is an image
-		if(!in_array($this->extension, ['gif', 'jpg', 'jpeg', 'png']))
+		if(!in_array(extension($origin), ['gif', 'jpg', 'jpeg', 'png']))
             throw new InternalErrorException(__d('thumb', 'The file {0} is not an image', $origin));
 		
 		//Creates the Imagick object adn strips all profiles and comments
@@ -160,7 +149,7 @@ class ThumbCreator {
 		$this->imagick->stripImage();
 		
 		//For jpeg images, sets the image compression
-		if($this->extension === 'jpg') {
+		if(mime_content_type($origin) === 'image/jpeg') {
 			$this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
 			$this->imagick->setImageCompressionQuality(100);
 		}
