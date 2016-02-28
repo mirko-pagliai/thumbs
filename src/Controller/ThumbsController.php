@@ -23,7 +23,7 @@
 namespace Thumbs\Controller;
 
 use App\Controller\AppController;
-use Cake\Filesystem\Folder;
+use Cake\Network\Exception\NotFoundException;
 use Thumbs\Utility\ThumbCreator;
 
 /**
@@ -31,71 +31,45 @@ use Thumbs\Utility\ThumbCreator;
  */
 class ThumbsController extends AppController {
 	/**
-	 * Thumbnail path
-	 * @var string
+	 * Internal function to render a thumbnail
+	 * @param string $target Target file to render
 	 */
-	protected $thumb;
-	
+	protected function _render($target) {
+		$this->autoRender = FALSE;
+
+		//Renders the thumbnail
+		header(sprintf('Content-type: %s', mime_content_type($target)));
+		readfile($target);
+
+		exit;
+	}
+
 	/**
 	 * Resizes an images, creating a thumbnail.
 	 * 
 	 * You have to set the maximum width and/or the maximum height as query string parameters (`width` and `height` parameters).
-	 * @param string $file File path, encoded with `base64_encode()`
+	 * @param string $origin Origin file path, encoded with `base64_encode()`
+	 * @throws NotFoundException
 	 * @uses Thumbs\Utility\ThumbCreator::resize()
 	 * @uses Thumbs\Utility\ThumbCreator::target()
-	 * @uses $thumb
+	 * @uses _render()
 	 */
-	public function resize($file) {
-		$height = $this->request->query('height');
-		$width = $this->request->query('width');
-		$file = base64_decode($file);
+	public function resize($origin) {
+		$height = $this->request->query('height') ? $this->request->query('height') : 0;
+		$width = $this->request->query('width') ? $this->request->query('width') : 0;
 		
-		//If there are not the final size, the original file is the thumbnail
-		if(empty($height) && empty($width)) {
-			$this->thumb = $file;
-			return;
-		}
+		//Checks for final size
+		if(empty($height) && empty($width))
+			throw new NotFoundException(__d('thumb', 'The final size are missing'));
 		
-		//If the file is local and its path is relative, then the path will be relative to `webroot/img`
-		$file = Folder::isAbsolute($file) ? $file : WWW_ROOT.'img'.DS.$file;
+		//Sets origin and target
+		$origin = base64_decode($origin);
+		$target = THUMBS.DS.sprintf('resize_%s_w%s_h%s.%s', md5($origin), $width, $height, extension($origin));
 		
-		//If the required size exceed the original size
-		if(($width && $width >= getimagesize($file)[0]) || ($height && $height >= getimagesize($file)[1])) {
-			$this->thumb = $file;
-			return;
-		}
+		//Creates the thumbnail, if doesn't exist
+		if(!is_readable($target))
+			(new ThumbCreator($origin))->target($target)->resize($width, $height);		
 		
-		//If the origin file is a remote file, removes the query string
-		$file = is_url($file) ? explode('?', $file, 2)[0] : $file;
-		
-		//Sets the thumbnail path
-		$this->thumb = THUMBS.DS.sprintf('resize_%s', md5($file));
-		$this->thumb .= $width ? sprintf('_w%s', $width) : NULL;
-		$this->thumb .= $height ? sprintf('_h%s', $height) : NULL;
-		$this->thumb = sprintf('%s.%s', $this->thumb, strtolower(pathinfo($file, PATHINFO_EXTENSION)));
-		
-		//Returns, if the thumbnail already exists
-		if(file_exists($this->thumb))
-			return;
-
-		//Creates the thumbnail
-		(new ThumbCreator($file))->target($this->thumb)->resize($width, $height);
-	}
-	
-	/**
-	 * Called after the controller action is run, but before the view is rendered.
-	 * You can use this method to perform logic or set view variables that are required on every request.
-	 * @param \Cake\Event\Event $event An Event instance
-	 * @see http://api.cakephp.org/3.2/class-Cake.Controller.Controller.html#_beforeRender
-	 * @uses $thumb
-	 */
-	public function beforeRender(\Cake\Event\Event $event) {
-        $this->autoRender = FALSE;
-		
-		//Renders the thumbnail
-		header(sprintf('Content-type: %s', mime_content_type($this->thumb)));
-        readfile($this->thumb);
-		
-		exit;
+		$this->_render($target);
 	}
 }
