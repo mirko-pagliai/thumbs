@@ -32,31 +32,29 @@ use Cake\Network\Exception\NotFoundException;
  */
 class ThumbCreator {
 	/**
-	 * Imagick object
-	 * @var object 
-	 */
-	protected $imagick;
-	
-	/**
 	 * Height of the origin file
 	 * @var int
 	 */
 	protected $height;
 
 	/**
-	 * Origin file path
+	 * Path of the origin file
 	 * @var string
-	 * @see origin() 
 	 */
 	protected $origin;
 	
 	/**
-	 * Target file path
+	 * Path of the target file
 	 * @var string
-	 * @see target() 
 	 */
 	protected $target;
 	
+	/**
+	 * If the origin file is temporary
+	 * @var bool 
+	 */
+	protected $temporary = FALSE;
+
 	/**
 	 * Width of the origin file
 	 * @var int
@@ -64,45 +62,60 @@ class ThumbCreator {
 	protected $width;
 
 	/**
-	 * Construct. 
+	 * Construct.  
+	 * Sets the origin file.
 	 * 
-	 * Sets the origin file, if passed. Otherwise, you have to call the `origin()` method
-	 * @param string $origin Origin file path
+	 * If the path of the origin file is relative, the file will be relative to `APP/webroot/img`.
+	 * @param string $origin Origin file
 	 * @return \Thumbs\Utility\ThumbCreator
 	 * @throws InternalErrorException
-	 * @uses origin()
+	 * @uses $height
+	 * @uses $origin
+	 * @uses $width
 	 */
-	public function __construct($origin = NULL) {
+	public function __construct($origin) {
 		//Checks for Imagick extension
         if(!extension_loaded('imagick'))
             throw new InternalErrorException(__d('thumb', '{0} is not available', 'Imagick'));
+				
+		//Checks if the target directory is writable
+		if(!is_writable(THUMBS))
+			throw new InternalErrorException(__d('thumb', 'File or directory {0} not writeable', THUMBS));
 		
-		if(!empty($origin))
-			$this->origin($origin);
+		//If the path of the origin file is relative, the file will be relative to `APP/webroot/img`
+		if(!\Cake\Filesystem\Folder::isAbsolute($origin))
+			$origin = WWW_ROOT.'img'.DS.$origin;
+				
+		//Checks if the origin is an image
+		if(!in_array(extension($origin), ['gif', 'jpg', 'jpeg', 'png']))
+            throw new InternalErrorException(__d('thumb', 'The file {0} is not an image', $origin));
+		
+		//Sets the path, the width and the height of the origin file
+		$this->origin = $origin;
+		$this->width = getimagesize($origin)[0];
+		$this->height = getimagesize($origin)[1];
 		
 		return $this;
 	}
 	
 	/**
 	 * Destruct
-	 * @uses $imagick
+	 * @uses $temporary
 	 * @uses $origin
 	 */
 	public function __destruct() {
-		//Removes the temporary file, if exists
-		if(dirname($this->origin) === sys_get_temp_dir())
-			unlink($this->origin);
-		
-		//Clears all resources associated to Imagick object
-		if(!empty($this->imagick))
-			$this->imagick->clear();
+		//Removes the origin file, if it's temporary
+		if($this->temporary)
+			@unlink($this->origin);
 	}
 	
 	/**
-	 * Downloads a file as a temporary file. This is useful if the source file is a remote file
+	 * Downloads a file as a temporary file.  
+	 * This is useful if the origin file is remote.
 	 * @param string $url File url
 	 * @return string Temporary file path
 	 * @throws NotFoundException
+	 * @uses $temporary
 	 */
 	protected function _downloadTemporary($url) {
 		//Checks if the file is readable
@@ -114,101 +127,127 @@ class ThumbCreator {
 		
 		file_put_contents($tmp, $fopen);
 		
+		$this->temporary = TRUE;
+		
 		return $tmp;
 	}
 	
 	/**
-	 * Sets the origin file
-	 * @param string $origin Origin file path
-	 * @return \Thumbs\Utility\ThumbCreator
-	 * @throws InternalErrorException
-	 * @uses _downloadTemporary()
-	 * @uses $height
-	 * @uses $imagick
-	 * @uses $origin
-	 * @uses $width
+	 * Sets and gets the Imagick instance
+	 * @param string $origin Path of the origin file
+	 * @return \Imagick
 	 */
-	public function origin($origin) {
-		//If the origin file is a remote file, downloads as temporary file
-		if(is_url($origin))
-			$origin = $this->_downloadTemporary($origin);
+	protected function _getImagickInstance($origin) {
+		//Creates the Imagick instance		
+		$imagick = new \Imagick($origin);
 		
-		//Checks if the origin file is readable
-		if(!is_readable($origin))
-			throw new InternalErrorException(__d('thumb', 'File or directory {0} not readable', $origin));
-				
-		//Checks if the origin is an image
-		if(!in_array(extension($origin), ['gif', 'jpg', 'jpeg', 'png']))
-            throw new InternalErrorException(__d('thumb', 'The file {0} is not an image', $origin));
-		
-		//Creates the Imagick object adn strips all profiles and comments
-		$this->imagick = new \Imagick($origin);
-		$this->imagick->stripImage();
+		//Strips all profiles and comments
+		$imagick->stripImage();
 		
 		//For jpeg images, sets the image compression
 		if(mime_content_type($origin) === 'image/jpeg') {
-			$this->imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
-			$this->imagick->setImageCompressionQuality(100);
+			$imagick->setImageCompression(\Imagick::COMPRESSION_JPEG);
+			$imagick->setImageCompressionQuality(100);
 		}
 		
-		//Sets the origin file and the origin size
-		$this->origin = $origin;
-		$this->height = $this->imagick->getimageheight();
-		$this->width = $this->imagick->getImageWidth();
-		
-		return $this;
+		return $imagick;
 	}
 	
 	/**
-	 * Resizes an image
-	 * @param int $width Final width
-	 * @param int $height Finali height
-	 * @return \Thumbs\Utility\ThumbCreator
+	 * Creates a thumbnail
+	 * @param int $width Width
+	 * @param int $height Height
+	 * @return string Thumbnail path
 	 * @throws InternalErrorException
-	 * @uses $imagick
+	 * @uses _downloadTemporary()
+	 * @uses _getImagickInstance()
 	 * @uses $height
-	 * @uses $target
+	 * @uses $origin
+	 * @uses $temporary
 	 * @uses $width
 	 */
 	public function resize($width = 0, $height = 0) {
-		//Checks for target
-		if(empty($this->target))
-			throw new InternalErrorException(__d('thumb', 'The target file has not been set'));
-		
 		//Checks for final size
 		if(empty($width) && empty($height))
 			throw new InternalErrorException(__d('thumb', 'The final size are missing'));
 		
-		//Checks for size
-		if(($width && $width >= $this->width) || ($height && $height >= $this->height))
-			throw new InternalErrorException(__d('thumb', 'The required size exceed the original size'));			
-				
-		//Writes the thumbnail
-		$this->imagick->thumbnailImage($width, $height, $width && $height);
-		$this->imagick->writeImage($this->target);
+		//Sets the target path
+		$target = THUMBS.DS.sprintf('resize_%s_w%s_h%s.%s', md5($this->origin), $width, $height, extension($this->origin));
 		
-		return $this;
+		//If the thumbnail already exists, returns
+		if(is_readable($target))
+			return $target;
+		
+		//If origin is a remote file, downloads as temporary file
+		if(is_url($this->origin))
+			$this->origin = $this->_downloadTemporary($this->origin);
+		
+		//Checks if the origin is readable
+		if(!is_readable($this->origin))
+			throw new InternalErrorException(__d('thumb', 'File or directory {0} not readable', $this->origin));
+		
+		//If the required size exceed the original size, returns
+		if(($width && $width >= $this->width) || ($height && $height >= $this->height)) {
+			//If it's a temporary file, copies as target
+			if($this->temporary) {
+				(new \Cake\Filesystem\File($this->origin))->copy($target);
+				return $target;
+			}
+			
+			return $this->origin;
+		}
+		
+		//Writes the thumbnail
+		$imagick = $this->_getImagickInstance($this->origin);
+		$imagick->thumbnailImage($width, $height, $width && $height);
+		$imagick->writeImage($target);
+		$imagick->clear();
+		
+		return $target;
 	}
 	
 	/**
-	 * Sets the target file
-	 * @param string $target Target file path
-	 * @return \Thumbs\Utility\ThumbCreator
+	 * Creates a square thumbnail
+	 * @param int $side Side
+	 * @return string Thumbnail path
 	 * @throws InternalErrorException
-	 * @uses $target
+	 * @uses _downloadTemporary()
+	 * @uses _getImagickInstance()
+	 * @uses $height
+	 * @uses $origin
+	 * @uses $width
 	 */
-	public function target($target) {
-		//Checks if the target file already exists
-		if(file_exists($target))
-			throw new InternalErrorException(__d('thumb', 'File or directory {0} already exists', $target));
+	public function square($side = 0) {
+		//Checks for final size
+		if(empty($side))
+			throw new InternalErrorException(__d('thumb', 'The final size are missing'));
 		
-		//Checks if the target directory is writable
-		if(!is_writable(dirname($target)))
-			throw new InternalErrorException(__d('thumb', 'File or directory {0} not writeable', dirname($target)));
+		//If the required size exceed the original size, so the side is the shortest side
+		if($side >= $this->width || $side >= $this->height)
+			$side = ($this->width > $this->height ? $this->height : $this->width);
 		
-		$this->target = $target;
+		//Sets the target path
+		$target = THUMBS.DS.sprintf('square_%s_s%s.%s', md5($this->origin), $side, extension($this->origin));
 		
-		return $this;
+		//If the thumbnail already exists, returns
+		if(is_readable($target))
+			return $target;
+		
+		//If origin is a remote file, downloads as temporary file
+		if(is_url($this->origin))
+			$this->origin = $this->_downloadTemporary($this->origin);
+		
+		//Checks if the origin is readable
+		if(!is_readable($this->origin))
+			throw new InternalErrorException(__d('thumb', 'File or directory {0} not readable', $this->origin));
+		
+		//Writes the thumbnail
+		$imagick = $this->_getImagickInstance($this->origin);
+		$imagick->cropThumbnailImage($side, $side);
+		$imagick->writeImage($target);
+		$imagick->clear();
+		
+		return $target;
 	}
 }
 
