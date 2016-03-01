@@ -50,12 +50,12 @@ class ThumbsController extends AppController {
 	 * Resizes an images, creating a thumbnail.
 	 * 
 	 * You have to set the maximum width and/or the maximum height as query string parameters (`width` and `height` parameters).
-	 * @param string $origin Origin file path, encoded with `base64_encode()`
+	 * @param string $origin Origin file path, encoded with `urlencode()` and `base64_encode()`
 	 * @uses Thumbs\Utility\ThumbCreator::resize()
 	 * @uses _render()
 	 */
 	public function resize($origin) {		
-		$target = (new ThumbCreator(base64_decode($origin)))
+		$target = (new ThumbCreator(urldecode(base64_decode($origin))))
 			->resize($this->request->query('width'), $this->request->query('height'));
 		
 		return $this->_render($target);
@@ -65,12 +65,12 @@ class ThumbsController extends AppController {
 	 * Resizes an images, creating a square thumbnail.
 	 * 
 	 * You have to set the maximum side as query string parameter (`side` parameter).
-	 * @param string $origin Origin file path, encoded with `base64_encode()`
+	 * @param string $origin Origin file path, encoded with `urlencode()` and `base64_encode()`
 	 * @uses Thumbs\Utility\ThumbCreator::square()
 	 * @uses _render()
 	 */
 	public function square($origin) {
-		$target = (new ThumbCreator(base64_decode($origin)))
+		$target = (new ThumbCreator(urldecode(base64_decode($origin))))
 			->square($this->request->query('side'));
 		
 		return $this->_render($target);

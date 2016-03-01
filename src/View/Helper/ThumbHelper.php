@@ -42,8 +42,21 @@ class ThumbHelper extends Helper {
 	 * @param string $path Path to the image file
 	 * @param array $options Array of HTML attributes
 	 * @return string HTML code
+	 * @uses resizeUrl()
 	 */
 	public function resize($path , array $options = []) {
+		return $this->Html->image($this->resizeUrl($path, $options), $options);
+	}
+	
+	/**
+	 * Gets the url for a thumbnail.
+	 * 
+	 * You have to set `height` and/or `width` option.
+	 * @param string $path Path to the image file
+	 * @param array $options Array of HTML attributes
+	 * @return string Url
+	 */
+	public function resizeUrl($path, array $options = []) {
 		if(!empty($options['width']))
 			$size['width'] = $options['width'];
 		if(!empty($options['height']))
@@ -52,9 +65,9 @@ class ThumbHelper extends Helper {
 		unset($options['height'], $options['width']);
 		
 		if(!empty($size))
-			$path = Router::url(['_name' => 'resize', base64_encode($path), '?' => $size], TRUE);
-						
-		return $this->Html->image($path, $options);
+			$path = Router::url(['_name' => 'resize', base64_encode(urlencode($path)), '?' => $size], TRUE);
+		
+		return $path;		
 	}
 	
 	/**
@@ -64,43 +77,61 @@ class ThumbHelper extends Helper {
 	 * @param string $path Path to the image file
 	 * @param array $options Array of HTML attributes
 	 * @return string HTML code
+	 * @uses squareUrl()
 	 */
 	public function square($path, array $options = []) {
+		return $this->Html->image($this->squareUrl($path, $options), $options);
+	}
+	
+	/**
+	 * Gets the url for a square thumbnail.
+	 * 
+	 * You have to set the `side` option.
+	 * @param string $path Path to the image file
+	 * @param array $options Array of HTML attributes
+	 * @return string Url
+	 */
+	public function squareUrl($path, array $options = []) {
 		if(!empty($options['side']))
 			$size['side'] = $options['side'];
 		
 		unset($options['side']);
 				
 		if(!empty($size))
-			$path = Router::url(['_name' => 'square', base64_encode($path), '?' => $size], TRUE);
+			$path = Router::url(['_name' => 'square', base64_encode(urlencode($path)), '?' => $size], TRUE);
 						
-		return $this->Html->image($path, $options);
+		return $path;
 	}
 	
 	/**
-	 * Resizes an images, creating a thumbnail.
-	 * 
-	 * You have to:
-	 *	* set the `side` option, if you want to create a square thumbnail;
-	 *	* set the `height` and/or `width` option, if you want to create a simple thumbnail.
+	 * Convenient alias for `resize()` and `square()` methods.  
+	 * It determines which method to use depending on the passed options.
 	 * @param string $path Path to the image file
 	 * @param array $options Array of HTML attributes
 	 * @return string HTML code
+	 * @uses resize()
+	 * @uses square()
 	 */
-//	public function resize($path , array $options = []) {
-//		//Checks for "side" option
-//		if(!empty($options['side']))
-//			$size['side'] = $options['side'];
-//		//Else, checks for "height" and/or "width options
-//		else {
-//			if(!empty($options['height']))
-//				$size['height'] = $options['height'];
-//			if(!empty($options['width']))
-//				$size['width'] = $options['width'];
-//		}
-//		
-//		unset($options['height'], $options['side'], $options['width']);
-//						
-//		return $this->Html->image(empty($size) ? $path : Router::url(['_name' => 'resize', base64_encode($path), '?' => $size], TRUE), $options);
-//	}
+	public function image($path, array $options = []) {
+		if(!empty($options['side']))
+			return $this->square($path, $options);
+		else
+			return $this->resize($path, $options);
+	}
+	
+	/**
+	 * Convenient alias for `resizeUrl()` and `squareUrl()` methods.  
+	 * It determines which method to use depending on the passed options.
+	 * @param string $path Path to the image file
+	 * @param array $options Array of HTML attributes
+	 * @return string Url
+	 * @uses resizeUrl()
+	 * @uses squareUrl()
+	 */
+	public function url($path, array $options = []) {
+		if(!empty($options['side']))
+			return $this->squareUrl($path, $options);
+		else
+			return $this->resizeUrl($path, $options);
+	}
 }
