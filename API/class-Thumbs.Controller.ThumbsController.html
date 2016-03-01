@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class Thumbs\Controller\ThumbsController | Thumbs API</title>
+
+	<link rel="stylesheet" href="resources/style.css?e99947befd7bf673c6b43ff75e9e0f170c88a60e">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+				<h3>Namespaces</h3>
+			<ul>
+				<li class="active main">
+					<a href="namespace-Thumbs.html">
+						Thumbs<span></span>
+					</a>
+
+						<ul>
+				<li class="active main">
+					<a href="namespace-Thumbs.Controller.html">
+						Controller					</a>
+
+						</li>
+				<li class="main">
+					<a href="namespace-Thumbs.Utility.html">
+						Utility					</a>
+
+						</li>
+				<li class="main">
+					<a href="namespace-Thumbs.View.html">
+						View<span></span>
+					</a>
+
+						<ul>
+				<li class="main">
+					<a href="namespace-Thumbs.View.Helper.html">
+						Helper					</a>
+
+						</li>
+							</ul></li></ul></li>
+			</ul>
+		</div>
+
+		<hr>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li class="active"><a href="class-Thumbs.Controller.ThumbsController.html">ThumbsController</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text" placeholder="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+				<a href="namespace-Thumbs.Controller.html" title="Summary of Thumbs\Controller"><span>Namespace</span></a>
+			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+				<li>
+					<a href="annotation-group-todo.html" title="List of elements with todo annotation">
+						<span>Todo</span>
+					</a>
+				</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class ThumbsController</h1>
+
+
+	<div class="description">
+	<p>Creates and displays thumbnails for image and video files</p>
+	</div>
+
+	<dl class="tree">
+		<dd style="padding-left:0px">
+App\Controller\AppController
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>Thumbs\Controller\ThumbsController</span></b>			
+			
+			
+		</dd>
+	</dl>
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		<b>Namespace:</b> <a href="namespace-Thumbs.html">Thumbs</a>\<a href="namespace-Thumbs.Controller.html">Controller</a><br>
+		
+
+			<b>Located at</b> <a href="source-class-Thumbs.Controller.ThumbsController.html#28-78" title="Go to source code">Controller/ThumbsController.php</a>
+		<br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="_render" id="__render">
+
+		<td class="attributes"><code>
+			 protected 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#__render">#</a>
+		<code><a href="source-class-Thumbs.Controller.ThumbsController.html#32-47" title="Go to source code">_render</a>( <span>string <var>$target</var></span> )</code>
+
+		<div class="description short">
+			<p>Internal function to render a thumbnail</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Internal function to render a thumbnail</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$target</var></dt>
+					<dd>Target file</dd>
+				</dl></div>
+
+
+
+				<h4>Used by</h4>
+				<div class="list">
+						<code><a href="class-Thumbs.Controller.ThumbsController.html#_resize">Thumbs\Controller\ThumbsController::resize()</a></code><br>
+						<code><a href="class-Thumbs.Controller.ThumbsController.html#_square">Thumbs\Controller\ThumbsController::square()</a></code><br>
+				</div>
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="resize" id="_resize">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_resize">#</a>
+		<code><a href="source-class-Thumbs.Controller.ThumbsController.html#49-62" title="Go to source code">resize</a>( <span>string <var>$origin</var></span> )</code>
+
+		<div class="description short">
+			<p>Resizes an images, creating a thumbnail.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Resizes an images, creating a thumbnail.</p>
+
+<p>You have to set the maximum width and/or the maximum height as query string parameters (<code>width</code> and <code>height</code> parameters).</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$origin</var></dt>
+					<dd>Origin file path, encoded with <code>urlencode()</code> and <code>base64_encode()</code></dd>
+				</dl></div>
+
+
+
+				<h4>Uses</h4>
+				<div class="list">
+						<code><a href="class-Thumbs.Utility.ThumbCreator.html#_resize">Thumbs\Utility\ThumbCreator::resize()</a></code><br>
+						<code><a href="class-Thumbs.Controller.ThumbsController.html#__render">Thumbs\Controller\ThumbsController::_render()</a></code><br>
+				</div>
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="square" id="_square">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_square">#</a>
+		<code><a href="source-class-Thumbs.Controller.ThumbsController.html#64-77" title="Go to source code">square</a>( <span>string <var>$origin</var></span> )</code>
+
+		<div class="description short">
+			<p>Resizes an images, creating a square thumbnail.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Resizes an images, creating a square thumbnail.</p>
+
+<p>You have to set the maximum side as query string parameter (<code>side</code> parameter).</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$origin</var></dt>
+					<dd>Origin file path, encoded with <code>urlencode()</code> and <code>base64_encode()</code></dd>
+				</dl></div>
+
+
+
+				<h4>Uses</h4>
+				<div class="list">
+						<code><a href="class-Thumbs.Utility.ThumbCreator.html#_square">Thumbs\Utility\ThumbCreator::square()</a></code><br>
+						<code><a href="class-Thumbs.Controller.ThumbsController.html#__render">Thumbs\Controller\ThumbsController::_render()</a></code><br>
+				</div>
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		Thumbs API API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>
