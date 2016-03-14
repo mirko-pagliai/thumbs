@@ -45,7 +45,11 @@ class ThumbHelper extends Helper {
 	 * @uses resizeUrl()
 	 */
 	public function resize($path , array $options = []) {
-		return $this->Html->image($this->resizeUrl($path, $options), $options);
+		$path = $this->resizeUrl($path, $options);
+				
+		unset($options['height'], $options['width']);
+		
+		return $this->Html->image($path, $options);
 	}
 	
 	/**
@@ -61,8 +65,6 @@ class ThumbHelper extends Helper {
 			$size['width'] = $options['width'];
 		if(!empty($options['height']))
 			$size['height'] = $options['height'];
-				
-		unset($options['height'], $options['width']);
 		
 		if(!empty($size))
 			$path = Router::url(['_name' => 'resize', base64_encode(urlencode($path)), '?' => $size], TRUE);
@@ -80,7 +82,11 @@ class ThumbHelper extends Helper {
 	 * @uses squareUrl()
 	 */
 	public function square($path, array $options = []) {
-		return $this->Html->image($this->squareUrl($path, $options), $options);
+		$path = $this->squareUrl($path, $options);
+		
+		unset($options['side']);
+		
+		return $this->Html->image($path, $options);
 	}
 	
 	/**
@@ -94,8 +100,6 @@ class ThumbHelper extends Helper {
 	public function squareUrl($path, array $options = []) {
 		if(!empty($options['side']))
 			$size['side'] = $options['side'];
-		
-		unset($options['side']);
 				
 		if(!empty($size))
 			$path = Router::url(['_name' => 'square', base64_encode(urlencode($path)), '?' => $size], TRUE);
