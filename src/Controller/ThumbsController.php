@@ -75,4 +75,18 @@ class ThumbsController extends AppController {
 		
 		return $this->_render($target);
 	}
+    
+    /**
+	 * Convenient alias for `resize()` and `square()` actions.  
+	 * It determines which method to use depending on the query arguments.
+	 * @param string $origin Origin file path, encoded with `urlencode()` and `base64_encode()`
+     * @uses resize()
+     * @uses square()
+     */
+    public function thumb($origin) {
+        if($this->request->query('side'))
+            return $this->square($origin);
+        else
+            return $this->resize($origin);
+    }
 }

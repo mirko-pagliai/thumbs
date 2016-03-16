@@ -80,7 +80,7 @@ class ThumbCreator {
 				
 		//Checks if the target directory is writable
 		if(!is_writable(THUMBS))
-			throw new InternalErrorException(__d('thumb', 'File or directory {0} not writeable', THUMBS));
+			throw new InternalErrorException(__d('me_tools', 'File or directory {0} not writeable', THUMBS));
 		
 		//If the path of the origin file is relative, the file will be relative to `APP/webroot/img`
 		if(!\Cake\Filesystem\Folder::isAbsolute($origin))
@@ -120,7 +120,7 @@ class ThumbCreator {
 	protected function _downloadTemporary($url) {
 		//Checks if the file is readable
 		if(!$fopen = @fopen($url, 'r'))
-			throw new NotFoundException(__d('thumb', 'File or directory {0} not readable', $url));
+			throw new NotFoundException(__d('me_tools', 'File or directory {0} not readable', $url));
 		
 		//Downloads as temporary file
 		$tmp = sprintf('%s.%s', tempnam(sys_get_temp_dir(), md5($url)), extension($url));
@@ -184,7 +184,7 @@ class ThumbCreator {
 		
 		//Checks if the origin is readable
 		if(!is_readable($this->origin))
-			throw new InternalErrorException(__d('thumb', 'File or directory {0} not readable', $this->origin));
+			throw new InternalErrorException(__d('me_tools', 'File or directory {0} not readable', $this->origin));
 		
 		//If the required size exceed the original size, returns
 		if(($width && $width >= $this->width) || ($height && $height >= $this->height)) {
@@ -239,7 +239,7 @@ class ThumbCreator {
 		
 		//Checks if the origin is readable
 		if(!is_readable($this->origin))
-			throw new InternalErrorException(__d('thumb', 'File or directory {0} not readable', $this->origin));
+			throw new InternalErrorException(__d('me_tools', 'File or directory {0} not readable', $this->origin));
 		
 		//Writes the thumbnail
 		$imagick = $this->_getImagickInstance($this->origin);
