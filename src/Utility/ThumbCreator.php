@@ -22,6 +22,8 @@
  */
 namespace Thumbs\Utility;
 
+use Cake\Filesystem\File;
+use Cake\Filesystem\Folder;
 use Cake\Network\Exception\InternalErrorException;
 use Cake\Network\Exception\NotFoundException;
 
@@ -76,19 +78,19 @@ class ThumbCreator {
 	public function __construct($origin) {
 		//Checks for Imagick extension
         if(!extension_loaded('imagick'))
-            throw new InternalErrorException(__d('thumb', '{0} is not available', 'Imagick'));
+            throw new InternalErrorException(__d('thumbs', '{0} is not available', 'Imagick'));
 				
 		//Checks if the target directory is writable
 		if(!is_writable(THUMBS))
-			throw new InternalErrorException(__d('me_tools', 'File or directory {0} not writeable', THUMBS));
+			throw new InternalErrorException(__d('thumbs', 'File or directory {0} not writeable', THUMBS));
 		
 		//If the path of the origin file is relative, the file will be relative to `APP/webroot/img`
-		if(!\Cake\Filesystem\Folder::isAbsolute($origin))
+		if(!Folder::isAbsolute($origin))
 			$origin = WWW_ROOT.'img'.DS.$origin;
 				
 		//Checks if the origin is an image
 		if(!in_array(extension($origin), ['gif', 'jpg', 'jpeg', 'png']))
-            throw new InternalErrorException(__d('thumb', 'The file {0} is not an image', $origin));
+            throw new InternalErrorException(__d('thumbs', 'The file {0} is not an image', $origin));
 		
 		//Sets the path, the width and the height of the origin file
 		$this->origin = $origin;
@@ -118,9 +120,11 @@ class ThumbCreator {
 	 * @uses $temporary
 	 */
 	protected function _downloadTemporary($url) {
+        $fopen = @fopen($url, 'r');
+        
 		//Checks if the file is readable
-		if(!$fopen = @fopen($url, 'r'))
-			throw new NotFoundException(__d('me_tools', 'File or directory {0} not readable', $url));
+		if(!$fopen)
+			throw new NotFoundException(__d('thumbs', 'File or directory {0} not readable', $url));
 		
 		//Downloads as temporary file
 		$tmp = sprintf('%s.%s', tempnam(sys_get_temp_dir(), md5($url)), extension($url));
@@ -166,11 +170,7 @@ class ThumbCreator {
 	 * @uses $temporary
 	 * @uses $width
 	 */
-	public function resize($width = 0, $height = 0) {
-		//Checks for final size
-		if(empty($width) && empty($height))
-			throw new InternalErrorException(__d('thumb', 'The final size are missing'));
-		
+	public function resize($width = 0, $height = 0) {		
 		//Sets the target path
 		$target = THUMBS.DS.sprintf('resize_%s_w%s_h%s.%s', md5($this->origin), $width, $height, extension($this->origin));
 		
@@ -184,13 +184,13 @@ class ThumbCreator {
 		
 		//Checks if the origin is readable
 		if(!is_readable($this->origin))
-			throw new InternalErrorException(__d('me_tools', 'File or directory {0} not readable', $this->origin));
+			throw new InternalErrorException(__d('thumbs', 'File or directory {0} not readable', $this->origin));
 		
 		//If the required size exceed the original size, returns
 		if(($width && $width >= $this->width) || ($height && $height >= $this->height)) {
 			//If it's a temporary file, copies as target
 			if($this->temporary) {
-				(new \Cake\Filesystem\File($this->origin))->copy($target);
+				(new File($this->origin))->copy($target);
 				return $target;
 			}
 			
@@ -217,14 +217,10 @@ class ThumbCreator {
 	 * @uses $origin
 	 * @uses $width
 	 */
-	public function square($side = 0) {
-		//Checks for final size
-		if(empty($side))
-			throw new InternalErrorException(__d('thumb', 'The final size are missing'));
-		
+	public function square($side) {		
 		//If the required size exceed the original size, so the side is the shortest side
 		if($side >= $this->width || $side >= $this->height)
-			$side = ($this->width > $this->height ? $this->height : $this->width);
+			$side = $this->width > $this->height ? $this->height : $this->width;
 		
 		//Sets the target path
 		$target = THUMBS.DS.sprintf('square_%s_s%s.%s', md5($this->origin), $side, extension($this->origin));
@@ -239,7 +235,7 @@ class ThumbCreator {
 		
 		//Checks if the origin is readable
 		if(!is_readable($this->origin))
-			throw new InternalErrorException(__d('me_tools', 'File or directory {0} not readable', $this->origin));
+			throw new InternalErrorException(__d('thumbs', 'File or directory {0} not readable', $this->origin));
 		
 		//Writes the thumbnail
 		$imagick = $this->_getImagickInstance($this->origin);
