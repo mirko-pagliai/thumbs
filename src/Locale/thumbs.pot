@@ -14,15 +14,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: /home/mirko/Libs/Plugins/Thumbs/src/Controller/ThumbsController.php:61;80
-msgid "There is no valid size"
+#: /home/mirko/Libs/Plugins/Thumbs/src/Utility/ThumbCreator.php:85
+msgid "File or directory {0} not writeable"
 msgstr ""
 
-#: /home/mirko/Libs/Plugins/Thumbs/src/Utility/ThumbCreator.php:81
-msgid "{0} is not available"
-msgstr ""
-
-#: /home/mirko/Libs/Plugins/Thumbs/src/Utility/ThumbCreator.php:93
-msgid "The file {0} is not an image"
+#: /home/mirko/Libs/Plugins/Thumbs/src/Utility/ThumbCreator.php:127;187;238
+msgid "File or directory {0} not readable"
 msgstr ""
 

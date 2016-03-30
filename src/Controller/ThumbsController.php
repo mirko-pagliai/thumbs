@@ -58,7 +58,7 @@ class ThumbsController extends AppController {
 	 */
 	public function resize($origin) {
         if(!$this->request->query('width') && !$this->request->query('height'))
-			throw new InternalErrorException(__d('thumb', 'There is no valid size'));
+			throw new InternalErrorException(__d('thumbs', 'There is no valid size'));
                 
         $thumb = new ThumbCreator(urldecode(base64_decode($origin)));
         $target = $thumb->resize($this->request->query('width'), $this->request->query('height'));
@@ -77,7 +77,7 @@ class ThumbsController extends AppController {
 	 */
 	public function square($origin) {
         if(!$this->request->query('side'))
-			throw new InternalErrorException(__d('thumb', 'There is no valid size'));
+			throw new InternalErrorException(__d('thumbs', 'There is no valid size'));
         
         $thumb = new ThumbCreator(urldecode(base64_decode($origin)));
         $target = $thumb->square($this->request->query('side'));

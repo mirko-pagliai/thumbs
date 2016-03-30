@@ -78,7 +78,7 @@ class ThumbCreator {
 	public function __construct($origin) {
 		//Checks for Imagick extension
         if(!extension_loaded('imagick'))
-            throw new InternalErrorException(__d('thumb', '{0} is not available', 'Imagick'));
+            throw new InternalErrorException(__d('thumbs', '{0} is not available', 'Imagick'));
 				
 		//Checks if the target directory is writable
 		if(!is_writable(THUMBS))
@@ -90,7 +90,7 @@ class ThumbCreator {
 				
 		//Checks if the origin is an image
 		if(!in_array(extension($origin), ['gif', 'jpg', 'jpeg', 'png']))
-            throw new InternalErrorException(__d('thumb', 'The file {0} is not an image', $origin));
+            throw new InternalErrorException(__d('thumbs', 'The file {0} is not an image', $origin));
 		
 		//Sets the path, the width and the height of the origin file
 		$this->origin = $origin;
