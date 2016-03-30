@@ -23,6 +23,7 @@
 namespace Thumbs\Controller;
 
 use App\Controller\AppController;
+use Cake\Network\Exception\InternalErrorException;
 use Thumbs\Utility\ThumbCreator;
 
 /**
@@ -54,7 +55,7 @@ class ThumbsController extends AppController {
 	 * @uses Thumbs\Utility\ThumbCreator::resize()
 	 * @uses _render()
 	 */
-	public function resize($origin) {		
+	public function resize($origin) {
 		$target = (new ThumbCreator(urldecode(base64_decode($origin))))
 			->resize($this->request->query('width'), $this->request->query('height'));
 		
@@ -82,11 +83,14 @@ class ThumbsController extends AppController {
 	 * @param string $origin Origin file path, encoded with `urlencode()` and `base64_encode()`
      * @uses resize()
      * @uses square()
+     * @throws InternalErrorException
      */
     public function thumb($origin) {
         if($this->request->query('side'))
             return $this->square($origin);
-        else
+        elseif($this->request->query('height') || $this->request->query('width'))
             return $this->resize($origin);
+        else
+			throw new InternalErrorException(__d('thumb', 'There is no valid size'));
     }
 }

@@ -22,6 +22,7 @@
  */
 namespace Thumbs\Utility;
 
+use Cake\Filesystem\Folder;
 use Cake\Network\Exception\InternalErrorException;
 use Cake\Network\Exception\NotFoundException;
 
@@ -83,7 +84,7 @@ class ThumbCreator {
 			throw new InternalErrorException(__d('me_tools', 'File or directory {0} not writeable', THUMBS));
 		
 		//If the path of the origin file is relative, the file will be relative to `APP/webroot/img`
-		if(!\Cake\Filesystem\Folder::isAbsolute($origin))
+		if(!Folder::isAbsolute($origin))
 			$origin = WWW_ROOT.'img'.DS.$origin;
 				
 		//Checks if the origin is an image
@@ -169,7 +170,7 @@ class ThumbCreator {
 	public function resize($width = 0, $height = 0) {
 		//Checks for final size
 		if(empty($width) && empty($height))
-			throw new InternalErrorException(__d('thumb', 'The final size are missing'));
+			throw new InternalErrorException(__d('thumb', 'There is no valid size'));
 		
 		//Sets the target path
 		$target = THUMBS.DS.sprintf('resize_%s_w%s_h%s.%s', md5($this->origin), $width, $height, extension($this->origin));
@@ -220,7 +221,7 @@ class ThumbCreator {
 	public function square($side = 0) {
 		//Checks for final size
 		if(empty($side))
-			throw new InternalErrorException(__d('thumb', 'The final size are missing'));
+			throw new InternalErrorException(__d('thumb', 'There is no valid size'));
 		
 		//If the required size exceed the original size, so the side is the shortest side
 		if($side >= $this->width || $side >= $this->height)

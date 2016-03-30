@@ -1,4 +1,7 @@
 # 1.x branch
+### 1.0.3
+* fixed bug.
+
 ### 1.0.2
 * added `thumb()` action, a convenient alias for `resize()` and `square()` actions.  
 
