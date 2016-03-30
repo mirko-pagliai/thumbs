@@ -52,12 +52,16 @@ class ThumbsController extends AppController {
 	 * 
 	 * You have to set the maximum width and/or the maximum height as query string parameters (`width` and `height` parameters).
 	 * @param string $origin Origin file path, encoded with `urlencode()` and `base64_encode()`
+     * @throws InternalErrorException
 	 * @uses Thumbs\Utility\ThumbCreator::resize()
 	 * @uses _render()
 	 */
 	public function resize($origin) {
-		$target = (new ThumbCreator(urldecode(base64_decode($origin))))
-			->resize($this->request->query('width'), $this->request->query('height'));
+        if(!$this->request->query('width') && !$this->request->query('height'))
+			throw new InternalErrorException(__d('thumb', 'There is no valid size'));
+                
+        $thumb = new ThumbCreator(urldecode(base64_decode($origin)));
+        $target = $thumb->resize($this->request->query('width'), $this->request->query('height'));
 		
 		return $this->_render($target);
 	}
@@ -67,12 +71,16 @@ class ThumbsController extends AppController {
 	 * 
 	 * You have to set the maximum side as query string parameter (`side` parameter).
 	 * @param string $origin Origin file path, encoded with `urlencode()` and `base64_encode()`
+     * @throws InternalErrorException
 	 * @uses Thumbs\Utility\ThumbCreator::square()
 	 * @uses _render()
 	 */
 	public function square($origin) {
-		$target = (new ThumbCreator(urldecode(base64_decode($origin))))
-			->square($this->request->query('side'));
+        if(!$this->request->query('side'))
+			throw new InternalErrorException(__d('thumb', 'There is no valid size'));
+        
+        $thumb = new ThumbCreator(urldecode(base64_decode($origin)));
+        $target = $thumb->square($this->request->query('side'));
 		
 		return $this->_render($target);
 	}
@@ -83,14 +91,11 @@ class ThumbsController extends AppController {
 	 * @param string $origin Origin file path, encoded with `urlencode()` and `base64_encode()`
      * @uses resize()
      * @uses square()
-     * @throws InternalErrorException
      */
     public function thumb($origin) {
         if($this->request->query('side'))
             return $this->square($origin);
-        elseif($this->request->query('height') || $this->request->query('width'))
-            return $this->resize($origin);
         else
-			throw new InternalErrorException(__d('thumb', 'There is no valid size'));
+            return $this->resize($origin);
     }
 }
