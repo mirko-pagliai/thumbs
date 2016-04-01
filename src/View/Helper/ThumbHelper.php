@@ -67,7 +67,7 @@ class ThumbHelper extends Helper {
 			$size['height'] = $options['height'];
 		
 		if(!empty($size))
-			$path = Router::url(['_name' => 'resize', base64_encode(urlencode($path)), '?' => $size], TRUE);
+			$path = Router::url(['_name' => 'resize', encode_path($path), '?' => $size], TRUE);
 		
 		return $path;		
 	}
@@ -102,7 +102,7 @@ class ThumbHelper extends Helper {
 			$size['side'] = $options['side'];
 				
 		if(!empty($size))
-			$path = Router::url(['_name' => 'square', base64_encode(urlencode($path)), '?' => $size], TRUE);
+			$path = Router::url(['_name' => 'square', encode_path($path), '?' => $size], TRUE);
 						
 		return $path;
 	}

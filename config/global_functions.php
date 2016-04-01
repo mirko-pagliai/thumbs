@@ -21,6 +21,28 @@
  * @link		http://git.novatlantis.it Nova Atlantis Ltd
  */
 
+if(!function_exists('decode_path')) {
+    /**
+     * Decodes path
+     * @param string $path Path
+     * @return string
+     */
+    function decode_path($path) {
+        return urldecode(base64_decode($path));
+    }
+}
+
+if(!function_exists('encode_path')) {
+    /**
+     * Encodes path
+     * @param string $path Path
+     * @return string
+     */
+    function encode_path($path) {
+        return base64_encode(urlencode($path));
+    }
+}
+
 if(!function_exists('extension')) {
 	/**
 	 * Returns the file extension.
