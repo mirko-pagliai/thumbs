@@ -1,4 +1,7 @@
 # 1.x branch
+### 1.0.4
+* improved code.
+
 ### 1.0.3
 * fixed bug;
 * little code fixes.
