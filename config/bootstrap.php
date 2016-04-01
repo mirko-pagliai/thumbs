@@ -21,9 +21,17 @@
  * @link		http://git.novatlantis.it Nova Atlantis Ltd
  */
 
+use Cake\Network\Exception\InternalErrorException;
+
+if(!extension_loaded('imagick'))
+    throw new InternalErrorException(sprintf('%s is not available', 'Imagick'));
+
 //Sets the default directory
 if(!defined('THUMBS'))
 	define('THUMBS', TMP.'thumbs');
+
+if(!is_writable(THUMBS))
+    throw new InternalErrorException(sprintf('File or directory %s not writeable', THUMBS));
 
 if(!function_exists('extension')) {
 	/**
