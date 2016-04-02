@@ -1,4 +1,7 @@
 # 1.x branch
+### 1.0.5
+* if the maximum size is not specified, it still uses the original size.
+
 ### 1.0.4
 * improved code.
 

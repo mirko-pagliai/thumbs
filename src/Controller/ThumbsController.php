@@ -52,14 +52,10 @@ class ThumbsController extends AppController {
 	 * 
 	 * You have to set the maximum width and/or the maximum height as query string parameters (`width` and `height` parameters).
 	 * @param string $origin Encoded origin file path
-     * @throws InternalErrorException
 	 * @uses Thumbs\Utility\ThumbCreator::resize()
 	 * @uses _render()
 	 */
-	public function resize($origin) {
-        if(!$this->request->query('width') && !$this->request->query('height'))
-			throw new InternalErrorException(__d('thumbs', 'There is no valid size'));
-                
+	public function resize($origin) {                
         $thumb = new ThumbCreator(decode_path($origin));
         $target = $thumb->resize($this->request->query('width'), $this->request->query('height'));
 		
@@ -71,14 +67,10 @@ class ThumbsController extends AppController {
 	 * 
 	 * You have to set the maximum side as query string parameter (`side` parameter).
 	 * @param string $origin Encoded origin file path
-     * @throws InternalErrorException
 	 * @uses Thumbs\Utility\ThumbCreator::square()
 	 * @uses _render()
 	 */
 	public function square($origin) {
-        if(!$this->request->query('side'))
-			throw new InternalErrorException(__d('thumbs', 'There is no valid size'));
-        
         $thumb = new ThumbCreator(decode_path($origin));
         $target = $thumb->square($this->request->query('side'));
 		

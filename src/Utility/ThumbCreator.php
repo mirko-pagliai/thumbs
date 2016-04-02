@@ -162,7 +162,13 @@ class ThumbCreator {
 	 * @uses $temporary
 	 * @uses $width
 	 */
-	public function resize($width = 0, $height = 0) {		
+	public function resize($width = 0, $height = 0) {
+		//If the required size are not set or if they exceed the original size, uses the original size
+        if((empty($width) && empty($height)) || ($width >= $this->width || $height >= $this->height)) {
+			$width = $this->width;
+            $height = $this->height;
+        }
+        
 		//Sets the target path
 		$target = THUMBS.DS.sprintf('resize_%s_w%s_h%s.%s', md5($this->origin), $width, $height, extension($this->origin));
 		
@@ -209,9 +215,9 @@ class ThumbCreator {
 	 * @uses $origin
 	 * @uses $width
 	 */
-	public function square($side) {		
-		//If the required size exceed the original size, so the side is the shortest side
-		if($side >= $this->width || $side >= $this->height)
+	public function square($side = 0) {
+		//If the required size is not set or if it exceeds the original size, so the side is the shortest side
+		if(empty($side) || ($side >= $this->width || $side >= $this->height))
 			$side = $this->width > $this->height ? $this->height : $this->width;
 		
 		//Sets the target path
