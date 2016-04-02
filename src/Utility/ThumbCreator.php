@@ -75,15 +75,7 @@ class ThumbCreator {
 	 * @uses $origin
 	 * @uses $width
 	 */
-	public function __construct($origin) {
-		//Checks for Imagick extension
-        if(!extension_loaded('imagick'))
-            throw new InternalErrorException(__d('thumbs', '{0} is not available', 'Imagick'));
-				
-		//Checks if the target directory is writable
-		if(!is_writable(THUMBS))
-			throw new InternalErrorException(__d('thumbs', 'File or directory {0} not writeable', THUMBS));
-		
+	public function __construct($origin) {		
 		//If the path of the origin file is relative, the file will be relative to `APP/webroot/img`
 		if(!Folder::isAbsolute($origin))
 			$origin = WWW_ROOT.'img'.DS.$origin;

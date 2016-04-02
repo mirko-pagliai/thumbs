@@ -21,30 +21,16 @@
  * @link		http://git.novatlantis.it Nova Atlantis Ltd
  */
 
+use Cake\Network\Exception\InternalErrorException;
+
+require_once 'global_functions.php';
+
+if(!extension_loaded('imagick'))
+    throw new InternalErrorException(sprintf('%s is not available', 'Imagick'));
+
 //Sets the default directory
 if(!defined('THUMBS'))
 	define('THUMBS', TMP.'thumbs');
 
-if(!function_exists('extension')) {
-	/**
-	 * Returns the file extension.
-	 * 
-	 * If it's an url, strips the query string.
-	 * @param string $file File
-	 * @return string Extension
-	 */
-	function extension($file) {
-		return strtolower(pathinfo(explode('?', $file, 2)[0], PATHINFO_EXTENSION));
-	}
-}
-
-if(!function_exists('is_url')) {
-	/**
-	 * Checks whether a url is invalid
-	 * @param string $url Url
-	 * @return bool
-	 */
-	function is_url($url) {
-		return (bool) preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $url);
-	}
-}
+if(!is_writable(THUMBS))
+    throw new InternalErrorException(sprintf('File or directory %s not writeable', THUMBS));
