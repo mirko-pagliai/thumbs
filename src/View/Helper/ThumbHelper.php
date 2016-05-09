@@ -39,6 +39,7 @@ class ThumbHelper extends Helper {
 	 * Resizes an images, creating a thumbnail.
 	 * 
 	 * You have to set `height` and/or `width` option.
+     * You can set `force` option.
 	 * @param string $path Path to the image file
 	 * @param array $options Array of HTML attributes
 	 * @return string HTML code
@@ -56,19 +57,26 @@ class ThumbHelper extends Helper {
 	 * Gets the url for a thumbnail.
 	 * 
 	 * You have to set `height` and/or `width` option.
+     * You can set `force` option.
 	 * @param string $path Path to the image file
 	 * @param array $options Array of HTML attributes
 	 * @return string Url
 	 */
 	public function resizeUrl($path, array $options = []) {
-		if(!empty($options['width']))
+		if(!empty($options['width'])) {
 			$size['width'] = $options['width'];
-		if(!empty($options['height']))
+        }
+		if(!empty($options['height'])) {
 			$size['height'] = $options['height'];
+        }
+        if(!empty($options['force'])) {
+            $size['force'] = TRUE;
+        }
 		
-		if(!empty($size))
+		if(!empty($size)) {
 			$path = Router::url(['_name' => 'resize', encode_path($path), '?' => $size], TRUE);
-		
+        }
+        
 		return $path;		
 	}
 	
@@ -76,6 +84,7 @@ class ThumbHelper extends Helper {
 	 * Resizes an images, creating a square thumbnail.
 	 * 
 	 * You have to set the `side` option.
+     * You can set `force` option.
 	 * @param string $path Path to the image file
 	 * @param array $options Array of HTML attributes
 	 * @return string HTML code
@@ -93,17 +102,23 @@ class ThumbHelper extends Helper {
 	 * Gets the url for a square thumbnail.
 	 * 
 	 * You have to set the `side` option.
+     * You can set `force` option.
 	 * @param string $path Path to the image file
 	 * @param array $options Array of HTML attributes
 	 * @return string Url
 	 */
 	public function squareUrl($path, array $options = []) {
-		if(!empty($options['side']))
+		if(!empty($options['side'])) {
 			$size['side'] = $options['side'];
-				
-		if(!empty($size))
+        }
+        if(!empty($options['force'])) {
+            $size['force'] = TRUE;
+        }
+        
+		if(!empty($size)) {
 			$path = Router::url(['_name' => 'square', encode_path($path), '?' => $size], TRUE);
-						
+        }
+        
 		return $path;
 	}
 	
@@ -117,10 +132,12 @@ class ThumbHelper extends Helper {
 	 * @uses square()
 	 */
 	public function image($path, array $options = []) {
-		if(!empty($options['side']))
+		if(!empty($options['side'])) {
 			return $this->square($path, $options);
-		else
+        }
+		else {
 			return $this->resize($path, $options);
+        }
 	}
 	
 	/**
@@ -133,9 +150,11 @@ class ThumbHelper extends Helper {
 	 * @uses squareUrl()
 	 */
 	public function url($path, array $options = []) {
-		if(!empty($options['side']))
+		if(!empty($options['side'])) {
 			return $this->squareUrl($path, $options);
-		else
+        }
+		else {
 			return $this->resizeUrl($path, $options);
+        }
 	}
 }
