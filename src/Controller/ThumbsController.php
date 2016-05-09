@@ -23,7 +23,6 @@
 namespace Thumbs\Controller;
 
 use App\Controller\AppController;
-use Cake\Network\Exception\InternalErrorException;
 use Thumbs\Utility\ThumbCreator;
 
 /**
@@ -35,9 +34,10 @@ class ThumbsController extends AppController {
 	 * @param string $target Target file
 	 */
 	protected function _render($target) {
-		if(is_url($target))
+		if(is_url($target)) {
 			return $this->redirect($target);
-		
+        }
+        
 		$this->autoRender = FALSE;
 		
 		//Renders the thumbnail
@@ -50,14 +50,18 @@ class ThumbsController extends AppController {
 	/**
 	 * Resizes an images, creating a thumbnail.
 	 * 
-	 * You have to set the maximum width and/or the maximum height as query string parameters (`width` and `height` parameters).
+	 * You have to set the maximum width and/or the maximum height as query 
+     * string parameters (`width` and `height` parameters).
+     * 
+     * You can create in any case a thumbnail with the desired sizes, even if 
+     * the original sizes are smaller (`force` parameter).
 	 * @param string $origin Encoded origin file path
 	 * @uses Thumbs\Utility\ThumbCreator::resize()
 	 * @uses _render()
 	 */
 	public function resize($origin) {                
         $thumb = new ThumbCreator(decode_path($origin));
-        $target = $thumb->resize($this->request->query('width'), $this->request->query('height'));
+        $target = $thumb->resize($this->request->query('width'), $this->request->query('height'), !empty($this->request->query('force')));
 		
 		return $this->_render($target);
 	}
@@ -65,14 +69,18 @@ class ThumbsController extends AppController {
 	/**
 	 * Resizes an images, creating a square thumbnail.
 	 * 
-	 * You have to set the maximum side as query string parameter (`side` parameter).
+	 * You have to set the maximum side as query string parameter (`side` 
+     * parameter).
+     * 
+     * You can create in any case a thumbnail with the desired sizes, even if 
+     * the original sizes are smaller (`force` parameter).
 	 * @param string $origin Encoded origin file path
 	 * @uses Thumbs\Utility\ThumbCreator::square()
 	 * @uses _render()
 	 */
-	public function square($origin) {
+	public function square($origin) {        
         $thumb = new ThumbCreator(decode_path($origin));
-        $target = $thumb->square($this->request->query('side'));
+        $target = $thumb->square($this->request->query('side'), !empty($this->request->query('force')));
 		
 		return $this->_render($target);
 	}
@@ -80,14 +88,16 @@ class ThumbsController extends AppController {
     /**
 	 * Convenient alias for `resize()` and `square()` actions.  
 	 * It determines which method to use depending on the query arguments.
-	 * @param string $origin Origin file path, encoded with `urlencode()` and `base64_encode()`
+	 * @param string $origin Origin file path, encoded with `urlencode()` and 
+     * `base64_encode()`
      * @uses resize()
      * @uses square()
      */
     public function thumb($origin) {
-        if($this->request->query('side'))
+        if($this->request->query('side')) {
             return $this->square($origin);
-        else
-            return $this->resize($origin);
+        }
+        
+        return $this->resize($origin);
     }
 }
