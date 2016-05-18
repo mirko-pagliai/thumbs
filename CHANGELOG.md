@@ -1,4 +1,8 @@
 # 1.x branch
+## 1.0 branch
+### 1.0.7
+* fixed serious bug for `force` option.
+
 ### 1.0.6
 * added `force` option for the helper. It forces the thumbnail to the desired sizes, even if the original sizes are smaller.
 
