@@ -59,7 +59,7 @@ class ThumbsController extends AppController {
 	 * @uses Thumbs\Utility\ThumbCreator::resize()
 	 * @uses _render()
 	 */
-	public function resize($origin) {                
+	public function resize($origin) {
         $thumb = new ThumbCreator(decode_path($origin));
         $target = $thumb->resize($this->request->query('width'), $this->request->query('height'), !empty($this->request->query('force')));
 		
