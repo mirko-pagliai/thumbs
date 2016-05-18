@@ -48,7 +48,7 @@ class ThumbHelper extends Helper {
 	public function resize($path , array $options = []) {
 		$path = $this->resizeUrl($path, $options);
 				
-		unset($options['height'], $options['width']);
+		unset($options['force'], $options['height'], $options['width']);
 		
 		return $this->Html->image($path, $options);
 	}
@@ -93,7 +93,7 @@ class ThumbHelper extends Helper {
 	public function square($path, array $options = []) {
 		$path = $this->squareUrl($path, $options);
 		
-		unset($options['side']);
+		unset($options['force'], $options['side']);
 		
 		return $this->Html->image($path, $options);
 	}

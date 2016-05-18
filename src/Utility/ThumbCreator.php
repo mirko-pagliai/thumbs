@@ -198,8 +198,9 @@ class ThumbCreator {
 			throw new InternalErrorException(__d('thumbs', 'File or directory {0} not readable', $this->origin));
         }
         
-		//If the required size exceed the original size, returns
-		if(($width && $width >= $this->width) || ($height && $height >= $this->height)) {
+		//If the required size exceed the original size and it was not required 
+        //to force the thumbnail sizes, it returns
+		if(!$force && (($width && $width >= $this->width) || ($height && $height >= $this->height))) {
 			//If it's a temporary file, copies as target
 			if($this->temporary) {
 				(new File($this->origin))->copy($target);
