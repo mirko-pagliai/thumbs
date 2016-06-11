@@ -23,7 +23,7 @@
 
 use Cake\Routing\Router;
 
-Router::plugin('Thumbs', ['path' => '/thumbs'], function ($routes) {
+Router::plugin('Thumbs', ['path' => '/thumbs'], function($routes) {
 	$routes->connect('/resize/*', ['controller' => 'Thumbs', 'action' => 'resize', 'plugin' => 'Thumbs'], ['_name' => 'resize']);
 	$routes->connect('/square/*', ['controller' => 'Thumbs', 'action' => 'square', 'plugin' => 'Thumbs'], ['_name' => 'square']);
 	$routes->connect('/thumb/*', ['controller' => 'Thumbs', 'action' => 'thumb', 'plugin' => 'Thumbs'], ['_name' => 'thumb']);
