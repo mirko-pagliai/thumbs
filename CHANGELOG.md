@@ -1,5 +1,8 @@
 # 1.x branch
 ## 1.0 branch
+### 1.0.8
+* fixed bug on controller.
+
 ### 1.0.7
 * fixed serious bug for `force` option.
 

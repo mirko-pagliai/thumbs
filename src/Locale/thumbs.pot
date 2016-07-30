@@ -1,11 +1,11 @@
-# LANGUAGE translation of CakePHP Application
-# Copyright YEAR NAME <EMAIL@ADDRESS>
+# LANGUAGE translation of DatabaseBackup
+# Copyright 2016 Mirko Pagliai <mirko.pagliai@gmail.com>
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2016-04-02 18:09+0200\n"
+"POT-Creation-Date: 2016-07-30 12:57+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -14,15 +14,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: /home/mirko/Libs/Plugins/Thumbs/src/Controller/ThumbsController.php:61;80
-msgid "There is no valid size"
+#: /home/mirko/Libs/Plugins/Thumbs/src/Controller/ThumbsController.php:66;90;110
+msgid "Missing origin"
 msgstr ""
 
-#: /home/mirko/Libs/Plugins/Thumbs/src/Utility/ThumbCreator.php:85
+#: /home/mirko/Libs/Plugins/Thumbs/src/Utility/ThumbCreator.php:87
 msgid "The file {0} is not an image"
 msgstr ""
 
-#: /home/mirko/Libs/Plugins/Thumbs/src/Utility/ThumbCreator.php:119;179;230
+#: /home/mirko/Libs/Plugins/Thumbs/src/Utility/ThumbCreator.php:123;198;260
 msgid "File or directory {0} not readable"
 msgstr ""
 
