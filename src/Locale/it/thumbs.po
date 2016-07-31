@@ -14,7 +14,7 @@ msgstr ""
 
 #: /home/mirko/Libs/Plugins/Thumbs/src/Controller/ThumbsController.php:66;90;110
 msgid "Missing origin"
-msgstr "Origine mancante"
+msgstr "File origine mancante"
 
 #: /home/mirko/Libs/Plugins/Thumbs/src/Utility/ThumbCreator.php:87
 msgid "The file {0} is not an image"
