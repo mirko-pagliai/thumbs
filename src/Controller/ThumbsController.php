@@ -23,6 +23,7 @@
 namespace Thumbs\Controller;
 
 use App\Controller\AppController;
+use Cake\Network\Exception\InternalErrorException;
 use Thumbs\Utility\ThumbCreator;
 
 /**
@@ -56,10 +57,15 @@ class ThumbsController extends AppController {
      * You can create in any case a thumbnail with the desired sizes, even if 
      * the original sizes are smaller (`force` parameter).
 	 * @param string $origin Encoded origin file path
+     * @throws InternalErrorException
 	 * @uses Thumbs\Utility\ThumbCreator::resize()
 	 * @uses _render()
 	 */
-	public function resize($origin) {
+	public function resize($origin = NULL) {
+        if(empty($origin)) {
+			throw new InternalErrorException(__d('thumbs', 'Missing origin'));
+        }
+        
         $thumb = new ThumbCreator(decode_path($origin));
         $target = $thumb->resize($this->request->query('width'), $this->request->query('height'), !empty($this->request->query('force')));
 		
@@ -75,10 +81,15 @@ class ThumbsController extends AppController {
      * You can create in any case a thumbnail with the desired sizes, even if 
      * the original sizes are smaller (`force` parameter).
 	 * @param string $origin Encoded origin file path
+     * @throws InternalErrorException
 	 * @uses Thumbs\Utility\ThumbCreator::square()
 	 * @uses _render()
 	 */
-	public function square($origin) {        
+	public function square($origin) {
+        if(empty($origin)) {
+			throw new InternalErrorException(__d('thumbs', 'Missing origin'));
+        }
+        
         $thumb = new ThumbCreator(decode_path($origin));
         $target = $thumb->square($this->request->query('side'), !empty($this->request->query('force')));
 		
@@ -90,10 +101,15 @@ class ThumbsController extends AppController {
 	 * It determines which method to use depending on the query arguments.
 	 * @param string $origin Origin file path, encoded with `urlencode()` and 
      * `base64_encode()`
+     * @throws InternalErrorException
      * @uses resize()
      * @uses square()
      */
     public function thumb($origin) {
+        if(empty($origin)) {
+			throw new InternalErrorException(__d('thumbs', 'Missing origin'));
+        }
+        
         if($this->request->query('side')) {
             return $this->square($origin);
         }
