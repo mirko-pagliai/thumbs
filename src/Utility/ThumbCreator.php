@@ -82,6 +82,11 @@ class ThumbCreator {
 			$origin = WWW_ROOT.'img'.DS.$origin;
         }
         
+		//Checks if the file is readable
+		if(!is_readable($origin)) {
+			throw new NotFoundException(__d('thumbs', 'File or directory {0} not readable', $origin));
+        }
+        
 		//Checks if the origin is an image
 		if(!in_array(extension($origin), ['gif', 'jpg', 'jpeg', 'png'])) {
             throw new InternalErrorException(__d('thumbs', 'The file {0} is not an image', $origin));

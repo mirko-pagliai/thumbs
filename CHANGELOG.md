@@ -1,5 +1,8 @@
 # 1.x branch
 ## 1.0 branch
+### 1.0.9
+* fixed little bug on `ThumbCreator` utility.
+
 ### 1.0.8
 * fixed bug on controller.
 
