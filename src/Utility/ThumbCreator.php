@@ -83,7 +83,7 @@ class ThumbCreator {
         }
         
 		//Checks if the file is readable
-		if(!is_readable($origin)) {
+		if(!is_url($origin) && !is_readable($origin)) {
 			throw new NotFoundException(__d('thumbs', 'File or directory {0} not readable', $origin));
         }
         
