@@ -15,22 +15,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Thumbs.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Mirko Pagliai <mirko.pagliai@gmail.com>
- * @copyright	Copyright (c) 2016, Mirko Pagliai for Nova Atlantis Ltd
- * @license		http://www.gnu.org/licenses/agpl.txt AGPL License
- * @link		http://git.novatlantis.it Nova Atlantis Ltd
+ * @author      Mirko Pagliai <mirko.pagliai@gmail.com>
+ * @copyright   Copyright (c) 2016, Mirko Pagliai for Nova Atlantis Ltd
+ * @license     http://www.gnu.org/licenses/agpl.txt AGPL License
+ * @link        http://git.novatlantis.it Nova Atlantis Ltd
  */
 
 use Cake\Network\Exception\InternalErrorException;
 
 require_once 'global_functions.php';
 
-if(!extension_loaded('imagick'))
+if (!extension_loaded('imagick')) {
     throw new InternalErrorException(sprintf('%s is not available', 'Imagick'));
+}
 
 //Sets the default directory
-if(!defined('THUMBS'))
-	define('THUMBS', TMP.'thumbs');
+if (!defined('THUMBS')) {
+    define('THUMBS', TMP . 'thumbs');
+}
 
-if(!is_writable(THUMBS))
+if (!is_writable(THUMBS)) {
     throw new InternalErrorException(sprintf('File or directory %s not writeable', THUMBS));
+}
