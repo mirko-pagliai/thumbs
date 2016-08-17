@@ -34,7 +34,7 @@ class ThumbsController extends AppController
     /**
      * Internal function to render a thumbnail
      * @param string $target Target file
-     * @return \Cake\Network\Response|null
+     * @return \Cake\Network\Response|null|void
      */
     protected function _render($target)
     {
@@ -60,7 +60,7 @@ class ThumbsController extends AppController
      * You can create in any case a thumbnail with the desired sizes, even if
      * the original sizes are smaller (`force` parameter).
      * @param string $origin Encoded origin file path
-     * @return \Cake\Network\Response|null
+     * @return \Cake\Network\Response|null|void
      * @throws InternalErrorException
      * @uses Thumbs\Utility\ThumbCreator::resize()
      * @uses _render()
@@ -90,7 +90,7 @@ class ThumbsController extends AppController
      * You can create in any case a thumbnail with the desired sizes, even if
      * the original sizes are smaller (`force` parameter).
      * @param string $origin Encoded origin file path
-     * @return \Cake\Network\Response|null
+     * @return \Cake\Network\Response|null|void
      * @throws InternalErrorException
      * @uses Thumbs\Utility\ThumbCreator::square()
      * @uses _render()
@@ -115,7 +115,7 @@ class ThumbsController extends AppController
      * It determines which method to use depending on the query arguments.
      * @param string $origin Origin file path, encoded with `urlencode()` and
      * `base64_encode()`
-     * @return \Cake\Network\Response|null
+     * @return \Cake\Network\Response|null|void
      * @throws InternalErrorException
      * @uses resize()
      * @uses square()
