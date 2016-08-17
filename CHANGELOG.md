@@ -2,6 +2,7 @@
 ## 1.0 branch
 ### 1.0.11
 * the code for temporary files has been greatly improved;
+* the `README` file explains how to create thumbnails;
 * fixed code for CakePHP Code Sniffer.
 
 ### 1.0.10
