@@ -15,146 +15,157 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with Thumbs.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author		Mirko Pagliai <mirko.pagliai@gmail.com>
- * @copyright	Copyright (c) 2016, Mirko Pagliai for Nova Atlantis Ltd
- * @license		http://www.gnu.org/licenses/agpl.txt AGPL License
- * @link		http://git.novatlantis.it Nova Atlantis Ltd
+ * @author      Mirko Pagliai <mirko.pagliai@gmail.com>
+ * @copyright   Copyright (c) 2016, Mirko Pagliai for Nova Atlantis Ltd
+ * @license     http://www.gnu.org/licenses/agpl.txt AGPL License
+ * @link        http://git.novatlantis.it Nova Atlantis Ltd
  */
 namespace Thumbs\View\Helper;
 
-use Cake\View\Helper;
 use Cake\Routing\Router;
+use Cake\View\Helper;
 
 /**
  * Allows to create thumbnails
  */
-class ThumbHelper extends Helper {
-	/**
-	 * Helpers
-	 * @var array 
-	 */
+class ThumbHelper extends Helper
+{
+    /**
+     * Helpers
+     * @var array
+     */
     public $helpers = ['Html'];
-	
-	/**
-	 * Resizes an images, creating a thumbnail.
-	 * 
-	 * You have to set `height` and/or `width` option.
+
+    /**
+     * Resizes an images, creating a thumbnail.
+     *
+     * You have to set `height` and/or `width` option.
      * You can set `force` option.
-	 * @param string $path Path to the image file
-	 * @param array $options Array of HTML attributes
-	 * @return string HTML code
-	 * @uses resizeUrl()
-	 */
-	public function resize($path , array $options = []) {
-		$path = $this->resizeUrl($path, $options);
-				
-		unset($options['force'], $options['height'], $options['width']);
-		
-		return $this->Html->image($path, $options);
-	}
-	
-	/**
-	 * Gets the url for a thumbnail.
-	 * 
-	 * You have to set `height` and/or `width` option.
+     * @param string $path Path to the image file
+     * @param array $options Array of HTML attributes
+     * @return string HTML code
+     * @uses resizeUrl()
+     */
+    public function resize($path, array $options = [])
+    {
+        $path = $this->resizeUrl($path, $options);
+
+        unset($options['force'], $options['height'], $options['width']);
+
+        return $this->Html->image($path, $options);
+    }
+
+    /**
+     * Gets the url for a thumbnail.
+     *
+     * You have to set `height` and/or `width` option.
      * You can set `force` option.
-	 * @param string $path Path to the image file
-	 * @param array $options Array of HTML attributes
-	 * @return string Url
-	 */
-	public function resizeUrl($path, array $options = []) {
-		if(!empty($options['width'])) {
-			$size['width'] = $options['width'];
+     * @param string $path Path to the image file
+     * @param array $options Array of HTML attributes
+     * @return string Url
+     */
+    public function resizeUrl($path, array $options = [])
+    {
+        if (!empty($options['width'])) {
+            $size['width'] = $options['width'];
         }
-		if(!empty($options['height'])) {
-			$size['height'] = $options['height'];
+        if (!empty($options['height'])) {
+            $size['height'] = $options['height'];
         }
-        if(!empty($options['force'])) {
-            $size['force'] = TRUE;
+        if (!empty($options['force'])) {
+            $size['force'] = true;
         }
-		
-		if(!empty($size)) {
-			$path = Router::url(['_name' => 'resize', encode_path($path), '?' => $size], TRUE);
+
+        if (!empty($size)) {
+            $path = Router::url(
+                ['_name' => 'resize', encodePath($path), '?' => $size],
+                true
+            );
         }
-        
-		return $path;		
-	}
-	
-	/**
-	 * Resizes an images, creating a square thumbnail.
-	 * 
-	 * You have to set the `side` option.
+
+        return $path;
+    }
+
+    /**
+     * Resizes an images, creating a square thumbnail.
+     *
+     * You have to set the `side` option.
      * You can set `force` option.
-	 * @param string $path Path to the image file
-	 * @param array $options Array of HTML attributes
-	 * @return string HTML code
-	 * @uses squareUrl()
-	 */
-	public function square($path, array $options = []) {
-		$path = $this->squareUrl($path, $options);
-		
-		unset($options['force'], $options['side']);
-		
-		return $this->Html->image($path, $options);
-	}
-	
-	/**
-	 * Gets the url for a square thumbnail.
-	 * 
-	 * You have to set the `side` option.
+     * @param string $path Path to the image file
+     * @param array $options Array of HTML attributes
+     * @return string HTML code
+     * @uses squareUrl()
+     */
+    public function square($path, array $options = [])
+    {
+        $path = $this->squareUrl($path, $options);
+
+        unset($options['force'], $options['side']);
+
+        return $this->Html->image($path, $options);
+    }
+
+    /**
+     * Gets the url for a square thumbnail.
+     *
+     * You have to set the `side` option.
      * You can set `force` option.
-	 * @param string $path Path to the image file
-	 * @param array $options Array of HTML attributes
-	 * @return string Url
-	 */
-	public function squareUrl($path, array $options = []) {
-		if(!empty($options['side'])) {
-			$size['side'] = $options['side'];
+     * @param string $path Path to the image file
+     * @param array $options Array of HTML attributes
+     * @return string Url
+     */
+    public function squareUrl($path, array $options = [])
+    {
+        if (!empty($options['side'])) {
+            $size['side'] = $options['side'];
         }
-        if(!empty($options['force'])) {
-            $size['force'] = TRUE;
+        if (!empty($options['force'])) {
+            $size['force'] = true;
         }
-        
-		if(!empty($size)) {
-			$path = Router::url(['_name' => 'square', encode_path($path), '?' => $size], TRUE);
+
+        if (!empty($size)) {
+            $path = Router::url(
+                ['_name' => 'square', encodePath($path), '?' => $size],
+                true
+            );
         }
-        
-		return $path;
-	}
-	
-	/**
-	 * Convenient alias for `resize()` and `square()` methods.  
-	 * It determines which method to use depending on the passed options.
-	 * @param string $path Path to the image file
-	 * @param array $options Array of HTML attributes
-	 * @return string HTML code
-	 * @uses resize()
-	 * @uses square()
-	 */
-	public function image($path, array $options = []) {
-		if(!empty($options['side'])) {
-			return $this->square($path, $options);
+
+        return $path;
+    }
+
+    /**
+     * Convenient alias for `resize()` and `square()` methods.
+     * It determines which method to use depending on the passed options.
+     * @param string $path Path to the image file
+     * @param array $options Array of HTML attributes
+     * @return string HTML code
+     * @uses resize()
+     * @uses square()
+     */
+    public function image($path, array $options = [])
+    {
+        if (!empty($options['side'])) {
+            return $this->square($path, $options);
+        } else {
+            return $this->resize($path, $options);
         }
-		else {
-			return $this->resize($path, $options);
+    }
+
+    /**
+     * Convenient alias for `resizeUrl()` and `squareUrl()` methods.
+     * It determines which method to use depending on the passed options.
+     * @param string $path Path to the image file
+     * @param array $options Array of HTML attributes
+     * @return string Url
+     * @uses resizeUrl()
+     * @uses squareUrl()
+     */
+    public function url($path, array $options = [])
+    {
+        if (!empty($options['side'])) {
+            return $this->squareUrl($path, $options);
+        } else {
+            return $this->resizeUrl($path, $options);
         }
-	}
-	
-	/**
-	 * Convenient alias for `resizeUrl()` and `squareUrl()` methods.  
-	 * It determines which method to use depending on the passed options.
-	 * @param string $path Path to the image file
-	 * @param array $options Array of HTML attributes
-	 * @return string Url
-	 * @uses resizeUrl()
-	 * @uses squareUrl()
-	 */
-	public function url($path, array $options = []) {
-		if(!empty($options['side'])) {
-			return $this->squareUrl($path, $options);
-        }
-		else {
-			return $this->resizeUrl($path, $options);
-        }
-	}
+    }
 }

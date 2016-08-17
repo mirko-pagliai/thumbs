@@ -1,7 +1,8 @@
 # 1.x branch
 ## 1.0 branch
 ### 1.0.11
-* the code for temporary files has been greatly improved.
+* the code for temporary files has been greatly improved;
+* fixed code for CakePHP Code Sniffer.
 
 ### 1.0.10
 * fixed several bug on `ThumbCreator` utility.
