@@ -53,7 +53,7 @@ class ThumbCreator {
 	protected $target;
 	
 	/**
-	 * If the origin file is temporary
+	 * Marker. It shows whether it is a temporary file
 	 * @var bool 
 	 */
 	protected $temporary = FALSE;
@@ -75,15 +75,21 @@ class ThumbCreator {
 	 * @uses $height
 	 * @uses $origin
 	 * @uses $width
+     * @uses _downloadTemporary()
 	 */
-	public function __construct($origin) {		
-		//If the origin is relative, it will be relative to `APP/webroot/img`
-		if(!Folder::isAbsolute($origin)) {
-			$origin = WWW_ROOT.'img'.DS.$origin;
+	public function __construct($origin) {
+        //If the origin is a remote file, downloads as temporary file
+        if(is_url($origin)) {
+            $origin = $this->_downloadTemporary($origin);
+        }
+        //If the origin is a local file and if it's relative, it will be 
+        //  relative to `APP/webroot/img`
+        elseif(!Folder::isAbsolute($origin)) {
+            $origin = WWW_ROOT.'img'.DS.$origin;
         }
         
 		//Checks if the file is readable
-		if(!is_url($origin) && !is_readable($origin)) {
+		if(!is_readable($origin)) {
 			throw new NotFoundException(__d('thumbs', 'File or directory {0} not readable', $origin));
         }
         
@@ -101,41 +107,31 @@ class ThumbCreator {
 	}
 	
 	/**
-	 * Destruct
-	 * @uses $temporary
-	 * @uses $origin
-	 */
-	public function __destruct() {
-		//Removes the origin file, if it's temporary
-		if($this->temporary) {
-			@unlink($this->origin);
-        }
-	}
-	
-	/**
 	 * Downloads a file as a temporary file.  
 	 * This is useful if the origin file is remote.
-	 * @param string $url File url
+	 * @param string $origin Remote origini
 	 * @return string Temporary file path
 	 * @throws NotFoundException
-	 * @uses $temporary
 	 */
-	protected function _downloadTemporary($url) {
-        $fopen = @fopen($url, 'r');
+	protected function _downloadTemporary($origin) {
+        $tmp = sprintf('%s.%s', sys_get_temp_dir().DS.md5($origin), extension($origin));
         
-		//Checks if the file is readable
-		if(!$fopen) {
-			throw new NotFoundException(__d('thumbs', 'File or directory {0} not readable', $url));
+        //Downloads, if the file doesn't exist
+        if(!file_exists($tmp)) {
+            $fopen = @fopen($origin, 'r');
+
+            //Checks if it's readable
+            if(!$fopen) {
+                throw new NotFoundException(__d('thumbs', 'File or directory {0} not readable', $origin));
+            }
+
+            file_put_contents($tmp, $fopen);
         }
         
-		//Downloads as temporary file
-		$tmp = sprintf('%s.%s', tempnam(sys_get_temp_dir(), md5($url)), extension($url));
-		
-		file_put_contents($tmp, $fopen);
-		
-		$this->temporary = TRUE;
-		
-		return $tmp;
+        //Marks as temporary file
+        $this->temporary = TRUE;
+
+        return $tmp;
 	}
 	
 	/**
@@ -193,16 +189,6 @@ class ThumbCreator {
 			return $target;
         }
         
-		//If origin is a remote file, downloads as temporary file
-		if(is_url($this->origin)) {
-			$this->origin = $this->_downloadTemporary($this->origin);
-        }
-        
-		//Checks if the origin is readable
-		if(!is_readable($this->origin)) {
-			throw new InternalErrorException(__d('thumbs', 'File or directory {0} not readable', $this->origin));
-        }
-        
 		//If the required size exceed the original size and it was not required 
         //to force the thumbnail sizes, it returns
 		if(!$force && (($width && $width >= $this->width) || ($height && $height >= $this->height))) {
@@ -253,16 +239,6 @@ class ThumbCreator {
 		//If the thumbnail already exists, returns
 		if(is_readable($target)) {
 			return $target;
-        }
-		
-		//If origin is a remote file, downloads as temporary file
-		if(is_url($this->origin)) {
-			$this->origin = $this->_downloadTemporary($this->origin);
-        }
-        
-		//Checks if the origin is readable
-		if(!is_readable($this->origin)) {
-			throw new InternalErrorException(__d('thumbs', 'File or directory {0} not readable', $this->origin));
         }
         
 		//Writes the thumbnail
