@@ -162,7 +162,7 @@ class ThumbCreator
      * Creates a thumbnail
      * @param int $width Width
      * @param int $height Height
-     * @param bool $force If `TRUE`, it forces the thumbnail to the desired sizes
+     * @param bool $force If `true`, it forces the thumbnail to the desired sizes
      * @return string Thumbnail path
      * @throws InternalErrorException
      * @uses _downloadTemporary()
@@ -216,7 +216,7 @@ class ThumbCreator
     /**
      * Creates a square thumbnail
      * @param int $side Side
-     * @param bool $force If `TRUE`, it forces the thumbnail to the desired sizes
+     * @param bool $force If `true`, it forces the thumbnail to the desired sizes
      * @return string Thumbnail path
      * @throws InternalErrorException
      * @uses _downloadTemporary()
