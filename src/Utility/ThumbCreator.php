@@ -83,27 +83,26 @@ class ThumbCreator
         //If the origin is a remote file, downloads as temporary file
         if (isUrl($origin)) {
             $origin = $this->_downloadTemporary($origin);
-        //If the origin is a local file and if it's relative, it will be
-        //  relative to `APP/webroot/img`
+        //If it's a local file, can be relative to `APP/webroot/img/`
         } elseif (!Folder::isAbsolute($origin)) {
             $origin = WWW_ROOT . 'img' . DS . $origin;
         }
 
-        //Checks if the file is readable
+        //Checks if is readable
         if (!is_readable($origin)) {
             throw new NotFoundException(
                 __d('thumbs', 'File or directory {0} not readable', $origin)
             );
         }
 
-        //Checks if the origin is an image
+        //Checks if has a valid extension
         if (!in_array(extension($origin), ['gif', 'jpg', 'jpeg', 'png'])) {
             throw new InternalErrorException(
                 __d('thumbs', 'The file {0} is not an image', $origin)
             );
         }
 
-        //Sets the path, the width and the height of the origin file
+        //Sets path, width and height of the origin file
         $this->origin = $origin;
         $this->width = getimagesize($origin)[0];
         $this->height = getimagesize($origin)[1];
@@ -114,17 +113,15 @@ class ThumbCreator
     /**
      * Downloads a file as a temporary file.
      * This is useful if the origin file is remote.
-     * @param string $origin Remote origini
+     * @param string $origin Remote origin
      * @return string Temporary file path
      * @throws NotFoundException
+     * @uses $temporary
      */
     protected function _downloadTemporary($origin)
     {
-        $tmp = sprintf(
-            '%s.%s',
-            sys_get_temp_dir() . DS . md5($origin),
-            extension($origin)
-        );
+        $tmp = sys_get_temp_dir() . DS . md5($origin) . '.' .
+            extension($origin);
 
         //Downloads, if the file doesn't exist
         if (!file_exists($tmp)) {
@@ -174,11 +171,8 @@ class ThumbCreator
      * Creates a thumbnail
      * @param int $width Width
      * @param int $height Height
-     * @param bool $force If `true`, it forces the thumbnail to the desired
-     *  sizes
+     * @param bool $force Forces the thumbnail to the desired sizes
      * @return string Thumbnail path
-     * @throws InternalErrorException
-     * @uses _downloadTemporary()
      * @uses _getImagickInstance()
      * @uses $height
      * @uses $origin
@@ -240,11 +234,8 @@ class ThumbCreator
     /**
      * Creates a square thumbnail
      * @param int $side Side
-     * @param bool $force If `true`, it forces the thumbnail to the desired
-     *  sizes
+     * @param bool $force Forces the thumbnail to the desired sizes
      * @return string Thumbnail path
-     * @throws InternalErrorException
-     * @uses _downloadTemporary()
      * @uses _getImagickInstance()
      * @uses $height
      * @uses $origin
