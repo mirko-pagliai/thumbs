@@ -100,7 +100,7 @@ class ThumbsController extends AppController
         if (empty($origin)) {
             throw new InternalErrorException(__d('thumbs', 'Missing origin'));
         }
-        
+
         $thumb = new ThumbCreator(decodePath($origin));
         $target = $thumb->square(
             $this->request->query('side'),
@@ -125,11 +125,11 @@ class ThumbsController extends AppController
         if (empty($origin)) {
             throw new InternalErrorException(__d('thumbs', 'Missing origin'));
         }
-        
+
         if ($this->request->query('side')) {
             return $this->square($origin);
         }
-        
+
         return $this->resize($origin);
     }
 }

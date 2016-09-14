@@ -26,7 +26,9 @@ use Cake\Network\Exception\InternalErrorException;
 require_once 'global_functions.php';
 
 if (!extension_loaded('imagick')) {
-    throw new InternalErrorException(sprintf('%s is not available', 'Imagick'));
+    throw new InternalErrorException(
+        sprintf('%s is not available', 'Imagick')
+    );
 }
 
 //Sets the default directory
@@ -35,5 +37,7 @@ if (!defined('THUMBS')) {
 }
 
 if (!is_writable(THUMBS)) {
-    throw new InternalErrorException(sprintf('File or directory %s not writeable', THUMBS));
+    throw new InternalErrorException(
+        sprintf('File or directory %s not writeable', THUMBS)
+    );
 }
