@@ -83,23 +83,26 @@ class ThumbCreator
         //If the origin is a remote file, downloads as temporary file
         if (isUrl($origin)) {
             $origin = $this->_downloadTemporary($origin);
-        //If the origin is a local file and if it's relative, it will be
-        //  relative to `APP/webroot/img`
+        //If it's a local file, can be relative to `APP/webroot/img/`
         } elseif (!Folder::isAbsolute($origin)) {
             $origin = WWW_ROOT . 'img' . DS . $origin;
         }
 
-        //Checks if the file is readable
+        //Checks if is readable
         if (!is_readable($origin)) {
-            throw new NotFoundException(__d('thumbs', 'File or directory {0} not readable', $origin));
+            throw new NotFoundException(
+                __d('thumbs', 'File or directory {0} not readable', $origin)
+            );
         }
 
-        //Checks if the origin is an image
+        //Checks if has a valid extension
         if (!in_array(extension($origin), ['gif', 'jpg', 'jpeg', 'png'])) {
-            throw new InternalErrorException(__d('thumbs', 'The file {0} is not an image', $origin));
+            throw new InternalErrorException(
+                __d('thumbs', 'The file {0} is not an image', $origin)
+            );
         }
-        
-        //Sets the path, the width and the height of the origin file
+
+        //Sets path, width and height of the origin file
         $this->origin = $origin;
         $this->width = getimagesize($origin)[0];
         $this->height = getimagesize($origin)[1];
@@ -110,26 +113,32 @@ class ThumbCreator
     /**
      * Downloads a file as a temporary file.
      * This is useful if the origin file is remote.
-     * @param string $origin Remote origini
+     * @param string $origin Remote origin
      * @return string Temporary file path
      * @throws NotFoundException
+     * @uses $temporary
      */
     protected function _downloadTemporary($origin)
     {
-        $tmp = sprintf('%s.%s', sys_get_temp_dir() . DS . md5($origin), extension($origin));
-        
+        $tmp = sys_get_temp_dir() . DS . md5($origin) . '.' .
+            extension($origin);
+
         //Downloads, if the file doesn't exist
         if (!file_exists($tmp)) {
             $fopen = fopen($origin, 'r');
 
             //Checks if it's readable
             if (!$fopen) {
-                throw new NotFoundException(__d('thumbs', 'File or directory {0} not readable', $origin));
+                throw new NotFoundException(__d(
+                    'thumbs',
+                    'File or directory {0} not readable',
+                    $origin
+                ));
             }
 
             file_put_contents($tmp, $fopen);
         }
-        
+
         //Marks as temporary file
         $this->temporary = true;
 
@@ -162,10 +171,8 @@ class ThumbCreator
      * Creates a thumbnail
      * @param int $width Width
      * @param int $height Height
-     * @param bool $force If `TRUE`, it forces the thumbnail to the desired sizes
+     * @param bool $force Forces the thumbnail to the desired sizes
      * @return string Thumbnail path
-     * @throws InternalErrorException
-     * @uses _downloadTemporary()
      * @uses _getImagickInstance()
      * @uses $height
      * @uses $origin
@@ -178,13 +185,21 @@ class ThumbCreator
         // - the required size is not set;
         // - the required size exceeds the original size and it was not
         //  required to force the thumbnail sizes
-        if ((empty($width) && empty($height)) || (!$force && ($width >= $this->width || $height >= $this->height))) {
+        if ((empty($width) && empty($height)) ||
+            (!$force && ($width >= $this->width || $height >= $this->height))
+        ) {
             $width = $this->width;
             $height = $this->height;
         }
-        
+
         //Sets the target path
-        $target = THUMBS . DS . sprintf('resize_%s_w%s_h%s.%s', md5($this->origin), $width, $height, extension($this->origin));
+        $target = THUMBS . DS . sprintf(
+            'resize_%s_w%s_h%s.%s',
+            md5($this->origin),
+            $width,
+            $height,
+            extension($this->origin)
+        );
 
         //If the thumbnail already exists, returns
         if (is_readable($target)) {
@@ -193,11 +208,14 @@ class ThumbCreator
 
         //If the required size exceed the original size and it was not required
         //to force the thumbnail sizes, it returns
-        if (!$force && (($width && $width >= $this->width) || ($height && $height >= $this->height))) {
+        if (!$force &&
+            (($width && $width >= $this->width) ||
+                ($height && $height >= $this->height))
+        ) {
             //If it's a temporary file, copies as target
             if ($this->temporary) {
                 (new File($this->origin))->copy($target);
-                
+
                 return $target;
             }
 
@@ -216,10 +234,8 @@ class ThumbCreator
     /**
      * Creates a square thumbnail
      * @param int $side Side
-     * @param bool $force If `TRUE`, it forces the thumbnail to the desired sizes
+     * @param bool $force Forces the thumbnail to the desired sizes
      * @return string Thumbnail path
-     * @throws InternalErrorException
-     * @uses _downloadTemporary()
      * @uses _getImagickInstance()
      * @uses $height
      * @uses $origin
@@ -231,18 +247,25 @@ class ThumbCreator
         // - the required size is not set;
         // - the required size exceeds the original size and it was not
         //  required to force the thumbnail sizes
-        if (empty($side) || (!$force && ($side >= $this->width || $side >= $this->height))) {
+        if (empty($side) ||
+            (!$force && ($side >= $this->width || $side >= $this->height))
+        ) {
             $side = $this->width > $this->height ? $this->height : $this->width;
         }
 
         //Sets the target path
-        $target = THUMBS . DS . sprintf('square_%s_s%s.%s', md5($this->origin), $side, extension($this->origin));
+        $target = THUMBS . DS . sprintf(
+            'square_%s_s%s.%s',
+            md5($this->origin),
+            $side,
+            extension($this->origin)
+        );
 
         //If the thumbnail already exists, returns
         if (is_readable($target)) {
             return $target;
         }
-        
+
         //Writes the thumbnail
         $imagick = $this->_getImagickInstance($this->origin);
         $imagick->cropThumbnailImage($side, $side);

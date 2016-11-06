@@ -40,10 +40,10 @@ class ThumbHelper extends Helper
      * Resizes an images, creating a thumbnail.
      *
      * You have to set `height` and/or `width` option.
-     * You can set `force` option.
+     * Optionally, you can set `force` option.
      * @param string $path Path to the image file
      * @param array $options Array of HTML attributes
-     * @return string HTML code
+     * @return string
      * @uses resizeUrl()
      */
     public function resize($path, array $options = [])
@@ -59,10 +59,10 @@ class ThumbHelper extends Helper
      * Gets the url for a thumbnail.
      *
      * You have to set `height` and/or `width` option.
-     * You can set `force` option.
+     * Optionally, you can set `force` option.
      * @param string $path Path to the image file
      * @param array $options Array of HTML attributes
-     * @return string Url
+     * @return string
      */
     public function resizeUrl($path, array $options = [])
     {
@@ -77,10 +77,11 @@ class ThumbHelper extends Helper
         }
 
         if (!empty($size)) {
-            $path = Router::url(
-                ['_name' => 'resize', encodePath($path), '?' => $size],
-                true
-            );
+            $path = Router::url([
+                '_name' => 'resize',
+                encodePath($path),
+                '?' => $size
+            ], true);
         }
 
         return $path;
@@ -90,10 +91,10 @@ class ThumbHelper extends Helper
      * Resizes an images, creating a square thumbnail.
      *
      * You have to set the `side` option.
-     * You can set `force` option.
+     * Optionally, you can set `force` option.
      * @param string $path Path to the image file
      * @param array $options Array of HTML attributes
-     * @return string HTML code
+     * @return string
      * @uses squareUrl()
      */
     public function square($path, array $options = [])
@@ -109,10 +110,10 @@ class ThumbHelper extends Helper
      * Gets the url for a square thumbnail.
      *
      * You have to set the `side` option.
-     * You can set `force` option.
+     * Optionally, you can set `force` option.
      * @param string $path Path to the image file
      * @param array $options Array of HTML attributes
-     * @return string Url
+     * @return string
      */
     public function squareUrl($path, array $options = [])
     {
@@ -124,10 +125,11 @@ class ThumbHelper extends Helper
         }
 
         if (!empty($size)) {
-            $path = Router::url(
-                ['_name' => 'square', encodePath($path), '?' => $size],
-                true
-            );
+            $path = Router::url([
+                '_name' => 'square',
+                encodePath($path),
+                '?' => $size
+            ], true);
         }
 
         return $path;
@@ -138,7 +140,7 @@ class ThumbHelper extends Helper
      * It determines which method to use depending on the passed options.
      * @param string $path Path to the image file
      * @param array $options Array of HTML attributes
-     * @return string HTML code
+     * @return string
      * @uses resize()
      * @uses square()
      */
@@ -146,9 +148,9 @@ class ThumbHelper extends Helper
     {
         if (!empty($options['side'])) {
             return $this->square($path, $options);
-        } else {
-            return $this->resize($path, $options);
         }
+
+        return $this->resize($path, $options);
     }
 
     /**
@@ -156,7 +158,7 @@ class ThumbHelper extends Helper
      * It determines which method to use depending on the passed options.
      * @param string $path Path to the image file
      * @param array $options Array of HTML attributes
-     * @return string Url
+     * @return string
      * @uses resizeUrl()
      * @uses squareUrl()
      */
@@ -164,8 +166,8 @@ class ThumbHelper extends Helper
     {
         if (!empty($options['side'])) {
             return $this->squareUrl($path, $options);
-        } else {
-            return $this->resizeUrl($path, $options);
         }
+
+        return $this->resizeUrl($path, $options);
     }
 }

@@ -1,3 +1,8 @@
+Starting novembre 2016, **this repository has been abandoned**.  
+See instead: [cakephp-thumber](https://github.com/mirko-pagliai/cakephp-thumber).
+
+***
+
 # Thumbs
 *Thumbs* is a CakePHP plugin to create thumbnails.  
 It can create thumbnails (rectangular or square) of local and remote images.

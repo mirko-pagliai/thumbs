@@ -55,7 +55,9 @@ if (!function_exists('extension')) {
      */
     function extension($file)
     {
-        return strtolower(pathinfo(explode('?', $file, 2)[0], PATHINFO_EXTENSION));
+        return strtolower(
+            pathinfo(explode('?', $file, 2)[0], PATHINFO_EXTENSION)
+        );
     }
 }
 
@@ -67,6 +69,9 @@ if (!function_exists('isUrl')) {
      */
     function isUrl($url)
     {
-        return (bool)preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $url);
+        return (bool)preg_match(
+            '/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            $url
+        );
     }
 }

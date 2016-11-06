@@ -10,8 +10,11 @@
     }],
     "require": {
         "php": ">=5.5.9",
-        "cakephp/cakephp": "~3.2",
+        "cakephp/cakephp": "3.3.*",
         "ext-imagick": ">=3.0.0"
+    },
+    "require-dev": {
+        "cakephp/cakephp-codesniffer": "2.*"
     },
     "autoload": {
         "psr-4": {
