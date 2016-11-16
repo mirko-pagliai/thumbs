@@ -1,4 +1,4 @@
-Starting novembre 2016, **this repository has been abandoned**.  
+Starting november 2016, **this repository has been abandoned**.  
 See instead: [cakephp-thumber](https://github.com/mirko-pagliai/cakephp-thumber).
 
 ***
